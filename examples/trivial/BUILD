@@ -1,7 +1,7 @@
-load("@rules_uniffi//rules:defs.bzl", "uniffi_library", "uniffi_rust_library", "uniffi_swift_library", "uniffi_kotlin_library")
+load("@rules_uniffi//uniffi:defs.bzl", "uniffi_library", "uniffi_rust_library", "uniffi_swift_library", "uniffi_kotlin_library")
 load("@crates//:defs.bzl", "all_crate_deps")
 load("@rules_rust//rust:defs.bzl", "rust_library", "rust_static_library", "rust_shared_library")
-load("@rules_swift//swift:swift.bzl", "swift_library")
+load("@rules_swift//swift:swift.bzl", "swift_binary")
 load("@rules_kotlin//kotlin:jvm.bzl", "kt_jvm_library", "kt_jvm_binary")
 
 uniffi_rust_library(
@@ -18,7 +18,7 @@ uniffi_swift_library(
     module_name = "MyLibrary"
 )
 
-swift_library(
+swift_binary(
     name = "swift-consumer",
     deps = [":swift_lib"],
     srcs = [":main.swift"]
