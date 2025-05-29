@@ -1,0 +1,81 @@
+module(name = "rules_uniffi")
+
+bazel_dep(
+    name="rules_android",
+    version = "0.6.1",
+)
+
+bazel_dep(
+    name = "rules_kotlin",
+    version = "2.1.4",
+)
+
+bazel_dep(
+    name = "bazel_skylib",
+    version = "1.7.1"
+)
+
+bazel_dep(
+    name = "rules_rust",
+    version = "0.61.0"
+)
+
+git_override(
+    module_name = "rules_rust",
+    commit = "bf408cb5bd5cc147cf3c14c971a8277056f5eb81",
+    remote = "https://github.com/ChristianBelloni/rules_rust.git"
+)
+
+bazel_dep(
+    name = "rules_swift",
+    version = "2.8.2",
+)
+
+crate = use_extension("@rules_rust//crate_universe:extensions.bzl", "crate")
+
+crate.from_cargo(
+    name = "uniffi_crates",
+    cargo_lockfile = "//tools:Cargo.lock",
+    manifests = ["//tools:Cargo.toml"],
+)
+
+use_repo(crate, "uniffi_crates")
+
+bazel_dep(
+  name = "rules_jvm_external",
+  version = "6.4"
+)
+
+maven = use_extension("@rules_jvm_external//:extensions.bzl", "maven")
+maven.install(
+    name = "uniffi_maven",
+    artifacts = [
+        "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2",
+        "net.java.dev.jna:jna:5.17.0"
+    ],
+    repositories = [
+      "https://repo1.maven.org/maven2",
+      "https://maven.google.com",
+    ],
+    # lock_file = "@rules_uniffi//:rules_jvm_external~~maven~uniffi_maven_install.json",
+)
+
+use_repo(maven, "uniffi_maven")
+
+maven_android = use_extension("@rules_jvm_external//:extensions.bzl", "maven")
+maven_android.install(
+    name = "uniffi_maven_android",
+    aar_import_bzl_label = "@rules_android//rules:rules.bzl",
+    use_starlark_android_rules = True,
+    artifacts = [
+        "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2",
+        "net.java.dev.jna:jna:aar:5.17.0",
+    ],
+    repositories = [
+      "https://repo1.maven.org/maven2",
+      "https://maven.google.com",
+    ],
+    # lock_file = "@rules_uniffi//:rules_jvm_external~~maven~uniffi_maven_install.json",
+)
+
+use_repo(maven, "uniffi_maven_android")

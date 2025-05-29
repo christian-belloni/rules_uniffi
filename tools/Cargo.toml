@@ -1,0 +1,7 @@
+[package]
+name = "uniffi_bin"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+uniffi = { version = "0.29", features = ["cli"] }
