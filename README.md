@@ -23,8 +23,6 @@ we chose this name only to reflect how much of their work is utilized in this re
 # Out of the scope of this repo
  - [ ] support UDL definition files
 
-***
-
 # Quickstart
 
 ## Rust dependencies
