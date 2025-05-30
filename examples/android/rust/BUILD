@@ -4,7 +4,7 @@ load("@crates//:defs.bzl", "all_crate_deps")
 
 uniffi_rust_library(
     name = "my-lib",
-    cargo_toml = ":Cargo.toml",
+    cargo_toml = "Cargo.toml",
     deps = all_crate_deps(),
     proc_macro_deps = all_crate_deps(proc_macro = True),
     srcs = glob(["src/**/*.rs"]),

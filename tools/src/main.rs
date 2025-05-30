@@ -1,18 +1,23 @@
-use std::path::PathBuf;
+use std::{
+    path::{Path, PathBuf},
+};
 
 pub fn main() {
-    // let wrapper: PathBuf = std::env::var("CARGO_WRAPPER").unwrap().into();
-    // println!(
-    //     "using wrapper at {} {}",
-    //     wrapper.display(),
-    //     wrapper.exists()
-    // );
-    // unsafe {
-    //     std::env::set_var(
-    //         "PATH",
-    //         wrapper.parent().unwrap().to_string_lossy().to_string(),
-    //     );
-    // };
+    let cargo_path = PathBuf::from(std::env::var("CARGO_TOML").unwrap());
+
+    // awful hack to circumvent path resolution in bazel
+    if !Path::new("./Cargo.toml").exists() {
+        std::fs::write(
+            "./Cargo.toml",
+            format!(
+                r#"[workspace]
+resolver="3"
+members = ["{}"]"#,
+                cargo_path.parent().unwrap().display()
+            ),
+        )
+        .unwrap();
+    }
 
     uniffi::uniffi_bindgen_main();
 
@@ -25,6 +30,10 @@ pub fn main() {
             .join("uniffi")
             .join(&lib_name)
             .join(format!("{lib_name}.kt"));
+
+        std::fs::create_dir_all(destination.parent().unwrap()).unwrap();
+
+        println!("{}\n{}", source.display(), destination.display());
 
         std::fs::copy(&source, &destination).unwrap();
 

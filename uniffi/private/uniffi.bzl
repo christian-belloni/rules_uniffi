@@ -26,7 +26,8 @@ def _generate_sources(
             "CARGO": cargo_bin.path,
             "OUT_DIR": parent,
             "LIB_NAME": crate_name,
-            "LANG": language
+            "LANG": language,
+            "CARGO_TOML": cargo_toml.path
         }
     )
 
