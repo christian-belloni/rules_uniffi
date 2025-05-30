@@ -2,9 +2,20 @@
 
 rules\_uniffi provides an easy and powerful way to develop cross platform applications with ergonomic interop with swift and kotlin (and more languages on the way)
 
+## This project should be regarded as extremely experimental
+
+the code itself is not complex but its hard to keep up with every dependency update
+
+
+
 # Features
  - Swift/Kotlin code generation powered by the [uniffi](https://github.com/mozilla/uniffi-rs) project
  - Automatic target definition for the generated code (cdylib for kotlin and staticlib for swift)
+
+# Roadmap
+ - [ ] support UDL definition files
+ - [ ] support uniffi.toml configuration
+ - [ ] support multiple crates
 
 # Quickstart
 
@@ -141,13 +152,13 @@ And we're done!
 
 you can now reference "my-swift-library" as a swift dependencies and everything is wired up to compile,
 
-you can find your functions, traits and struct in the module "MyLibrary"
+you can find your functions, traits and structs in the module "MyLibrary"
 
 you can now reference "my-kotlin-library" as a kotlin dependencies and everything is wired up to compile,
 
 for the moment it's not possible to change the full package path of the generated library, 
 
-you can find your functions, traits and struct in the package uniffi.my\_library
+you can find your functions, traits and structs in the package uniffi.my\_library
 
 To define an android kotlin library change "uniffi\_kotlin\_library" to "uniffi\_android\_library"
 
