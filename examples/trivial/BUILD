@@ -1,8 +1,7 @@
-load("@rules_uniffi//uniffi:defs.bzl", "uniffi_library", "uniffi_rust_library", "uniffi_swift_library", "uniffi_kotlin_library")
-load("@crates//:defs.bzl", "all_crate_deps")
-load("@rules_rust//rust:defs.bzl", "rust_library", "rust_static_library", "rust_shared_library")
+load("@rules_uniffi//uniffi:defs.bzl", "uniffi_rust_library", "uniffi_swift_library", "uniffi_kotlin_library")
 load("@rules_swift//swift:swift.bzl", "swift_binary")
-load("@rules_kotlin//kotlin:jvm.bzl", "kt_jvm_library", "kt_jvm_binary")
+load("@rules_kotlin//kotlin:jvm.bzl", "kt_jvm_binary")
+load("@crates//:defs.bzl", "all_crate_deps")
 
 uniffi_rust_library(
     name = "my-lib",
@@ -19,7 +18,7 @@ uniffi_swift_library(
 )
 
 swift_binary(
-    name = "swift-consumer",
+    name = "swift-bin",
     deps = [":swift_lib"],
     srcs = [":main.swift"]
 )
@@ -30,7 +29,7 @@ uniffi_kotlin_library(
 )
 
 kt_jvm_binary(
-    name = "kotlin-consumer",
+    name = "kotlin-bin",
     main_class = "MainClass",
     srcs = [":main.kt"],
     deps = [":kotlin_lib"] + ["@rules_uniffi//3rdparty:jna", "@rules_uniffi//3rdparty:coroutines"],
