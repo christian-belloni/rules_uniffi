@@ -156,11 +156,11 @@ uniffi_swift_library(
 
 And we're done! 
 
-you can now reference "my-swift-library" as a swift dependencies and everything is wired up to compile,
+### you can now reference "my-swift-library" as a swift dependencies and everything is wired up to compile,
 
 you can find your functions, traits and structs in the module "MyLibrary"
 
-you can now reference "my-kotlin-library" as a kotlin dependencies and everything is wired up to compile,
+### you can now reference "my-kotlin-library" as a kotlin dependencies and everything is wired up to compile,
 
 for the moment it's not possible to change the full package path of the generated library, 
 
