@@ -137,6 +137,8 @@ uniffi_kotlin_library(
 
 ```
 
+> To define an android kotlin library change "uniffi\_kotlin\_library" to "uniffi\_android\_library"
+
 ## The swift library definition
 
 in a BUILD file define your kotlin generated library
@@ -165,6 +167,4 @@ you can find your functions, traits and structs in the module "MyLibrary"
 for the moment it's not possible to change the full package path of the generated library, 
 
 you can find your functions, traits and structs in the package uniffi.my\_library
-
-> To define an android kotlin library change "uniffi\_kotlin\_library" to "uniffi\_android\_library"
 
