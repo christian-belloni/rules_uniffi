@@ -7,7 +7,7 @@ rules\_uniffi provides an easy and powerful way to develop cross platform applic
 This is the third re-write of the same library so we can't make any promises at this time but we're hopeful since 
 rules_kotlin version 2.1.4 landed (which supports rules_android)
 
-We are in no any way, shape or form affiliated with the [uniffi](https://github.com/mozilla/uniffi-rs) project, we chose this name only to reflect how much
+_We are in no any way, shape or form affiliated with the [uniffi](https://github.com/mozilla/uniffi-rs) project_, we chose this name only to reflect how much
 of their work is utilized in this repo, without them this library wouldn't exist.
 
 # Features
