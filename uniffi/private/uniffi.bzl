@@ -118,7 +118,7 @@ uniffi_library = rule(
 )
 
 
-def uniffi_rust_library(name, cargo_toml, **kwargs):
+def uniffi_rust_library(name, cargo_toml, visibility = [], **kwargs):
     kwargs.setdefault("compile_data", [])
     kwargs["compile_data"] += [cargo_toml]
 
@@ -127,18 +127,21 @@ def uniffi_rust_library(name, cargo_toml, **kwargs):
     rust_library(
         name = "%s-rust" % name,
         crate_name = crate_name,
+        visibility = visibility,
         **kwargs
     )
 
     rust_static_library(
         name = "%s-static" % name,
         crate_name = crate_name,
+        visibility = visibility,
         **kwargs
     )
 
     rust_shared_library(
         name = "%s-shared" % name,
         crate_name = crate_name,
+        visibility = visibility,
         **kwargs
     )
 
@@ -148,5 +151,6 @@ def uniffi_rust_library(name, cargo_toml, **kwargs):
         static_lib = ":%s-static" % name,
         shared_lib = ":%s-shared" % name,
         cargo_toml = cargo_toml,
-        srcs = kwargs["srcs"]
+        srcs = kwargs["srcs"],
+        visibility = visibility,
     )
