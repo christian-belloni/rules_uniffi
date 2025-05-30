@@ -47,7 +47,8 @@ bazel_dep(
 crate = use_extension("@rules_rust//crate_universe:extensions.bzl", "crate")
 
 crate.from_cargo(
-    name = "crates", # crates is what we will call this repository, feel free to change this but afterwards we'll assume you used crates as the name
+    name = "crates", # crates is what we will call this repository, feel free to change this 
+                     # but afterwards we'll assume you used crates as the name
     cargo_lockfile = "//:Cargo.lock", # Replace this with the path to your  workspace Cargo.lock
     manifests = ["//:Cargo.toml"], # Replace this with the path to your  workspace Cargo.toml
 )
