@@ -9,11 +9,22 @@ rules\_uniffi provides an easy and powerful way to develop cross platform applic
 # Kotlin Quickstart
 
 ## Rust dependencies
-
 add the uniffi library to your Cargo.toml's dependencies
 
 ```toml
 uniffi = { version = "0.29" } # look for the compatibility section to choose the version
+```
+
+## Rust code
+src/lib.rs
+
+```rust
+uniffi::setup_scaffolding!();
+
+#[uniffi::export]
+pub fn add(left: u8, right: u8) -> u8 {
+    left + right
+}
 ```
 
 ## MODULE.bazel
@@ -89,3 +100,17 @@ You'll see three targets defined by this rule,
  - the cdylib "my-library-shared" target, this will be used for kotlin interop
 
 ##
+
+## The kotlin library definition
+
+in a BUILD file define your kotlin generated library
+
+```starlark
+load("@rules_uniffi//uniffi:defs.bzl", "uniffi_kotlin_library")
+
+uniffi_kotlin_library(
+    name = "my-kotlin-library",
+    library = ":my-library" # replace this with your library target
+)
+
+```

@@ -32,5 +32,5 @@ kt_jvm_binary(
     name = "kotlin-bin",
     main_class = "MainClass",
     srcs = [":main.kt"],
-    deps = [":kotlin_lib"] + ["@rules_uniffi//3rdparty:jna", "@rules_uniffi//3rdparty:coroutines"],
+    deps = [":kotlin_lib"],
 )
