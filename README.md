@@ -2,20 +2,25 @@
 
 rules\_uniffi provides an easy and powerful way to develop cross platform applications with ergonomic interop with swift and kotlin (and more languages on the way)
 
-## This project should be regarded as extremely experimental
+# Stability guarantees and disclaimers
 
-the code itself is not complex but its hard to keep up with every dependency update
+This is the third re-write of the same library so we can't make any promises at this time but we're hopeful since 
+rules_kotlin version 2.1.4 landed (which supports rules_android)
 
-
+We are in no any way, shape or form affiliated with the [uniffi](https://github.com/mozilla/uniffi-rs) project, we chose this name only to reflect how much
+of their work is utilized in this repo, without them this library wouldn't exist.
 
 # Features
  - Swift/Kotlin code generation powered by the [uniffi](https://github.com/mozilla/uniffi-rs) project
  - Automatic target definition for the generated code (cdylib for kotlin and staticlib for swift)
 
 # Roadmap
- - [ ] support UDL definition files
  - [ ] support uniffi.toml configuration
  - [ ] support multiple crates
+ - [ ] support C#
+
+# Out of the scope of this repo
+ - [ ] support UDL definition files
 
 # Quickstart
 
