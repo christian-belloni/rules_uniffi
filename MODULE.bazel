@@ -20,12 +20,6 @@ bazel_dep(
     version = "0.61.0"
 )
 
-git_override(
-    module_name = "rules_rust",
-    commit = "bf408cb5bd5cc147cf3c14c971a8277056f5eb81",
-    remote = "https://github.com/ChristianBelloni/rules_rust.git"
-)
-
 bazel_dep(
     name = "rules_swift",
     version = "2.8.2",
