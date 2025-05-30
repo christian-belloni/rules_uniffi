@@ -6,7 +6,7 @@ rules\_uniffi provides an easy and powerful way to develop cross platform applic
  - Swift/Kotlin code generation powered by the [uniffi](https://github.com/mozilla/uniffi-rs) project
  - Automatic target definition for the generated code (cdylib for kotlin and staticlib for swift)
 
-# Kotlin Quickstart
+# Quickstart
 
 ## Rust dependencies
 add the uniffi library to your Cargo.toml's dependencies
@@ -53,6 +53,11 @@ bazel_dep(
     version = "2.1.4" # or the latest version available
 )
 
+bazel_dep(
+    name = "rules_swift",
+    version = "2.8.2", # or the latest version available
+)
+
 # Define your rust dependencies
 
 crate = use_extension("@rules_rust//crate_universe:extensions.bzl", "crate")
@@ -96,7 +101,7 @@ uniffi_rust_library(
 You'll see three targets defined by this rule,
 
  - the main "my-library" target, this is what we'll use for code generation
- - the static "my-library-static" target, this will be used for swift interop, for this example you can ignore it
+ - the static "my-library-static" target, this will be used for swift interop
  - the cdylib "my-library-shared" target, this will be used for kotlin interop
 
 ##
@@ -115,7 +120,28 @@ uniffi_kotlin_library(
 
 ```
 
+## The swift library definition
+
+in a BUILD file define your kotlin generated library
+
+```starlark
+load("@rules_uniffi//uniffi:defs.bzl", "uniffi_swift_library")
+
+uniffi_swift_library(
+    name = "my-swift-library",
+    library = ":my-library" # replace this with your library target
+    module_name = "MyLibrary" # here you can modify the generated module name
+)
+
+```
+
+## Conclusion
+
 And we're done! 
+
+you can now reference "my-swift-library" as a swift dependencies and everything is wired up to compile,
+
+you can find your functions, traits and struct in the module "MyLibrary"
 
 you can now reference "my-kotlin-library" as a kotlin dependencies and everything is wired up to compile,
 
@@ -124,3 +150,4 @@ for the moment it's not possible to change the full package path of the generate
 you can find your functions, traits and struct in the package uniffi.my\_library
 
 To define an android kotlin library change "uniffi\_kotlin\_library" to "uniffi\_android\_library"
+
