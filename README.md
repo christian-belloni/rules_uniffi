@@ -3,7 +3,7 @@
 rules\_uniffi provides an easy and powerful way to develop cross platform applications with ergonomic interop with swift and kotlin (and more languages on the way)
 
 # Features
- - Swift/Kotlin code generation powered by the (uniffi)[https://github.com/mozilla/uniffi-rs] library
+ - Swift/Kotlin code generation powered by the [uniffi](https://github.com/mozilla/uniffi-rs) library
  - Automatic target definition for the generated code (cdylib for kotlin and staticlib for swift)
 
 # Kotlin Quickstart
