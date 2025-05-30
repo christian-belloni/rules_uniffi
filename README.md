@@ -49,10 +49,43 @@ crate = use_extension("@rules_rust//crate_universe:extensions.bzl", "crate")
 crate.from_cargo(
     name = "crates", # crates is what we will call this repository, feel free to change this 
                      # but afterwards we'll assume you used crates as the name
-    cargo_lockfile = "//:Cargo.lock", # Replace this with the path to your  workspace Cargo.lock
-    manifests = ["//:Cargo.toml"], # Replace this with the path to your  workspace Cargo.toml
+    # Replace this with the path to your  workspace Cargo.lock
+    cargo_lockfile = "//:Cargo.lock", 
+    # Replace this with the path to your workspace Cargo.toml and all your crate's Cargo.toml
+    manifests = ["//:Cargo.toml"], 
 )
 
 use_repo(crate, "crates") # same as before
 
 ```
+
+## The main library definition
+
+Define your main library target, for more resources look at the [official rules\_rust docs](https://github.com/bazelbuild/rules_rust)
+
+```starlark
+# Load the entry point rule
+load("@rules_uniffi//uniffi:defs.bzl", "uniffi_rust_library")
+
+# Load your rust dependencies
+load("@crates//:defs.bzl", "all_crate_deps")
+
+uniffi_rust_library(
+    # WARNING! for the moment this target name has to be the same as the package
+    # defined in the Cargo.toml, in the future we'll relax this restriction.
+    name = "my-library",
+    cargo_toml = ":Cargo.toml",
+    deps = all_crate_deps(),
+    proc_macro_deps = all_crate_deps(proc_macro = True),
+    srcs = glob(["src/**/*.rs"])
+)
+
+```
+
+You'll see three targets defined by this rule,
+
+ - the main "my-library" target, this is what we'll use for code generation
+ - the static "my-library-static" target, this will be used for swift interop, for this example you can ignore it
+ - the cdylib "my-library-shared" target, this will be used for kotlin interop
+
+##
