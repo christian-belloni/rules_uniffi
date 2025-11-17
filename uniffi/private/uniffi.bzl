@@ -1,157 +1,141 @@
-load(":providers.bzl", "UniffiInfo")
-load("@rules_rust//rust:defs.bzl", "rust_library", "rust_static_library", "rust_shared_library")
-load("@rules_swift//swift:swift_interop_hint.bzl", "swift_interop_hint")
+load("@rules_rust//rust:rust_common.bzl", "CrateInfo", "DepInfo")
+load("@rules_rust//rust:defs.bzl", "rust_common")
+load("@rules_swift//swift:providers.bzl", "SwiftInfo", "create_swift_module_context", "create_clang_module_inputs", "create_swift_module_inputs")
+load("@rules_swift//swift:swift_common.bzl", "swift_common")
+load("@rules_swift//doc:doc.bzl", "derive_swift_module_name")
+
+def _uniffi_library_impl(ctx):
+    rust = ctx.attr.rust_library
+    shared = _cc_providers(ctx.attr.shared_library)
+    static = _cc_providers(ctx.attr.static_library)
+
+    return _rust_providers(rust) + [UniffiInfo(rust_library = rust, shared_library = shared, static_library = static)]
 
 
-def _generate_sources(
-    actions, 
-    language, 
-    parent, 
-    lib, 
-    crate_name, 
-    cargo_toml, 
-    srcs,
-    outputs,
-    uniffi_bin, 
-    cargo_bin, 
-):
-    actions.run(
-        inputs = [lib, cargo_toml] + srcs,
-        outputs = outputs,
-        tools = [cargo_bin],
-        executable = uniffi_bin,
-        arguments = ["generate", "--library", lib.path, "--out-dir", parent, "--language", language, "--no-format"],
-        mnemonic = "UniffiGenerate",
-        env = {
-            "CARGO": cargo_bin.path,
-            "OUT_DIR": parent,
-            "LIB_NAME": crate_name,
-            "LANG": language,
-            "CARGO_TOML": cargo_toml.path
-        }
-    )
-
-    return outputs
-
-
-def _generate_kotlin(actions, crate_name, uniffi_bin, cdylib, cargo_bin, cargo_toml, srcs):
+def _cc_providers(cc_dep):
+    default_info = cc_dep[DefaultInfo]
+    cc_info = cc_dep[CcInfo]
+    return [default_info, cc_info]
     
-    out_kt = actions.declare_file("{0}.kt".format(crate_name))
-    parent = out_kt.path.replace("/{0}.kt".format(crate_name), "")
 
-    outputs = [out_kt]
+def _rust_providers(rust):
+    default_info = rust[DefaultInfo]
+    crate_info = rust[CrateInfo]
+    dep_info = rust[DepInfo]
+    return [default_info, crate_info, dep_info]
 
-    _generate_sources(
-        actions = actions,
-        language = "kotlin",
-        parent = parent,
-        lib = cdylib,
-        crate_name = crate_name,
-        cargo_toml = cargo_toml,
-        srcs = srcs,
-        outputs = outputs,
-        uniffi_bin = uniffi_bin,
-        cargo_bin = cargo_bin,
-    )
-
-    return out_kt
-
-def _generate_swift(actions, crate_name, uniffi_bin, staticlib, cargo_bin, cargo_toml, srcs):
-    out_swift = actions.declare_file("{0}.swift".format(crate_name))
-    out_h = actions.declare_file("{0}FFI.h".format(crate_name))
-    out_modulemap = actions.declare_file("{0}FFI.modulemap".format(crate_name))
-    
-    parent = out_swift.path.replace("/{0}.swift".format(crate_name), "")
-
-    outputs = [out_swift, out_h, out_modulemap]
-
-    _generate_sources(
-        actions = actions,
-        language = "swift",
-        parent = parent,
-        lib = staticlib,
-        crate_name = crate_name,
-        cargo_toml = cargo_toml,
-        srcs = srcs,
-        outputs = outputs,
-        uniffi_bin = uniffi_bin,
-        cargo_bin = cargo_bin,
-    )
-
-    return outputs
-
-def _uniffi_library(ctx):
-    cargo_bin = ctx.executable._cargo
-    uniffi_bin = ctx.executable._uniffi_bin
-    
-    cargo_toml = ctx.file.cargo_toml
-    staticlib = ctx.attr.static_lib[DefaultInfo].files.to_list()[0]
-    sharedlib = ctx.attr.shared_lib[DefaultInfo].files.to_list()[0]
-    srcs = ctx.files.srcs
-
-    crate_name = ctx.attr.crate_name.replace("-", "_")
-
-    out_kt = _generate_kotlin(ctx.actions, crate_name, uniffi_bin, sharedlib, cargo_bin, cargo_toml, srcs)
-    [out_swift, out_h, out_modulemap] = _generate_swift(ctx.actions, crate_name, uniffi_bin, staticlib, cargo_bin, cargo_toml, srcs)
-
-    info = UniffiInfo(
-        kotlin_source = out_kt,
-        shared_library = sharedlib,
-        swift_source = out_swift,
-        c_header = out_h,
-        module_map = out_modulemap,
-    )
-
-    return [info]
+UniffiInfo = provider("", fields = {
+    "rust_library": "Rust library",
+    "shared_library": "Rust shared library",
+    "static_library": "Rust static library"
+})
 
 
 uniffi_library = rule(
-    implementation = _uniffi_library,
+    implementation = _uniffi_library_impl,
     attrs = {
-        "crate_name": attr.string(mandatory = True),
-        "static_lib": attr.label(providers = [DefaultInfo, CcInfo], mandatory = True),
-        "shared_lib": attr.label(providers = [DefaultInfo, CcInfo], mandatory = True),
-        "cargo_toml": attr.label(mandatory = True, allow_single_file = True),
-        "srcs": attr.label_list(mandatory = True, allow_files = [".rs"]),
-        "_uniffi_bin": attr.label(default = Label("@rules_uniffi//tools:uniffi_bin"), executable = True, cfg = "host"),
-        "_cargo": attr.label(default = Label("@rules_rust//tools/upstream_wrapper:cargo"), executable = True, cfg = "host"),
+        "rust_library": attr.label(providers = [CrateInfo, DefaultInfo]),
+        "shared_library": attr.label(providers = [DefaultInfo, CcInfo]),
+        "static_library": attr.label(providers = [DefaultInfo, CcInfo]),
     },
 )
 
+def _tmp_shared_impl(ctx):
+    info = ctx.attr.uniffi_library[UniffiInfo]
+    default_info = info.shared_library[0]
+    cc_info = info.shared_library[1]
+    return [default_info, cc_info]
 
-def uniffi_rust_library(name, cargo_toml, visibility = [], **kwargs):
-    kwargs.setdefault("compile_data", [])
-    kwargs["compile_data"] += [cargo_toml]
+#    out_dir = ctx.actions.declare_directory("%s_swift_out" % ctx.attr.name)
+#    ctx.actions.run(inputs = [cdylib], outputs = [out_dir], executable = ctx.executable._uniffi, arguments = ["generate", "--language", "swift", "--library", cdylib.path, "--out-dir", out_dir.path])
+#
+#    swift_file = ctx.actions.declare_file("%s.swift" % ctx.attr.name)
+#
+#    ctx.actions.run_shell(inputs = [out_dir], outputs = [swift_file], command = "cp {0}/{1}.swift {2}".format(out_dir.path, ctx.attr.name, swift_file.path))
 
-    crate_name = name.replace("-", "_")
+def _uniffi_swift_library_impl(ctx):
 
-    rust_library(
-        name = "%s-rust" % name,
-        crate_name = crate_name,
-        visibility = visibility,
-        **kwargs
+    ccinfo = ctx.attr.uniffi_library[UniffiInfo].static_library[1]
+    # ccinfo = ctx.attr.uniffi_library[UniffiInfo].static_library[CcInfo]
+
+
+    cdylib = ctx.attr.uniffi_library[UniffiInfo].static_library[0].files.to_list()[0]
+    out_dir = ctx.actions.declare_directory("_generated_%s" % ctx.attr.name)
+
+
+
+    ctx.actions.run(inputs = [cdylib], outputs = [out_dir], executable = ctx.executable._uniffi, arguments = ["generate", "--language", "swift", "--library", cdylib.path, "--out-dir", out_dir.path])
+
+    swift_file = ctx.actions.declare_file("%s.swift" % ctx.attr.name)
+    ctx.actions.run_shell(inputs = [out_dir], outputs = [swift_file], command = "cp {}/*.swift {}".format(out_dir.path, swift_file.path))
+    
+    header_file = ctx.actions.declare_file("%s.h" % ctx.attr.name)
+    ctx.actions.run_shell(inputs = [out_dir], outputs = [header_file], command = "cp {}/*FFI.h {}".format(out_dir.path, header_file.path))
+
+    modulemap_file = ctx.actions.declare_file("%s.modulemap" % ctx.attr.name)
+    ctx.actions.run_shell(inputs = [out_dir], outputs = [modulemap_file], command = "cp {}/*FFI.modulemap {}".format(out_dir.path, modulemap_file.path))
+    
+    comp_ctx = cc_common.create_compilation_context(headers = depset([header_file]))
+
+    swift_toolchain = swift_common.get_toolchain(ctx)
+
+    feature_configuration = swift_common.configure_features(
+        ctx = ctx,
+        requested_features = [],
+        swift_toolchain = swift_toolchain,
+        unsupported_features = [],
+    )
+    
+
+    precompiled = swift_common.precompile_clang_module(
+        actions = ctx.actions,
+        cc_compilation_context = comp_ctx,
+        feature_configuration = feature_configuration,
+        module_map_file = modulemap_file,
+        module_name = derive_swift_module_name("", ctx.attr.name),
+        swift_toolchain = swift_toolchain,
+        target_name = ctx.attr.name,
+        toolchain_type = None
     )
 
-    rust_static_library(
-        name = "%s-static" % name,
-        crate_name = crate_name,
-        visibility = visibility,
-        **kwargs
+    clang_module = create_clang_module_inputs(compilation_context = comp_ctx, module_map = modulemap_file, precompiled_module = precompiled)
+    
+    compilation_context = swift_common.create_compilation_context(defines = [], srcs = [swift_file], transitive_modules = [])
+
+    module_context = create_swift_module_context(name = ctx.attr.name, clang = clang_module, compilation_context = compilation_context)
+
+    compiled = swift_common.compile(
+        actions = ctx.actions,
+        cc_infos = [ccinfo],
+        feature_configuration = feature_configuration,
+        module_name = derive_swift_module_name("", ctx.attr.name),
+        package_name = None,
+        srcs = [swift_file],
+        swift_infos = [SwiftInfo(modules = [clang_module])],
+        swift_toolchain = swift_toolchain,
+        target_name = ctx.attr.name,
+        workspace_name = ctx.workspace_name,
     )
 
-    rust_shared_library(
-        name = "%s-shared" % name,
-        crate_name = crate_name,
-        visibility = visibility,
-        **kwargs
-    )
+    
 
-    uniffi_library(
-        name = name,
-        crate_name = crate_name,
-        static_lib = ":%s-static" % name,
-        shared_lib = ":%s-shared" % name,
-        cargo_toml = cargo_toml,
-        srcs = kwargs["srcs"],
-        visibility = visibility,
-    )
+    return [DefaultInfo(files = depset(compiled.compilation_outputs.objects)), compiled.swift_info]
+
+
+uniffi_swift_library = rule(
+    implementation = _uniffi_swift_library_impl,
+    provides = [SwiftInfo],
+    attrs = {
+        "uniffi_library": attr.label(providers = [UniffiInfo]),
+        "_uniffi": attr.label(default = Label("//tools:uniffi_bindgen"), executable = True, cfg = "host")
+    },
+    fragments = ["cpp"],
+    toolchains = swift_common.use_toolchain(),
+)
+
+tmp_shared = rule(
+    implementation = _tmp_shared_impl,
+    attrs = {
+        "uniffi_library": attr.label(providers = [UniffiInfo])
+    },
+)

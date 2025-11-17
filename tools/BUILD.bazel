@@ -1,0 +1,5 @@
+alias(
+    name = "uniffi_bindgen",
+    actual = "@bindeps//:uniffi__uniffi-bindgen",
+    visibility = ["//visibility:public"],
+)
