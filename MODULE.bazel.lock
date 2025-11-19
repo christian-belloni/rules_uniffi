@@ -459,7 +459,7 @@
     "@@rules_rust+//crate_universe:extension.bzl%crate": {
       "general": {
         "bzlTransitiveDigest": "es7bCykQoww7is+Qx9uAJhSv+mO0/LwSOAM8U+cOcpU=",
-        "usagesDigest": "J7hPGU/ytMV6e/rMUxjA6Fraz9SIy2kX2jywqOyZ8qI=",
+        "usagesDigest": "y0YWQ2dbNRlaWIn7j7DDiB0nM23wirjdujrDOkStz5o=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
         "envVariables": {
@@ -1755,8 +1755,8 @@
         "recordedRepoMappingEntries": [
           [
             "",
-            "rust_host_tools_nightly",
-            "rules_rust++rust_host_tools+rust_host_tools_nightly"
+            "uniffi_rht_nightly",
+            "rules_rust++rust_host_tools+uniffi_rht_nightly"
           ],
           [
             "bazel_features+",

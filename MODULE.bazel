@@ -1,6 +1,7 @@
 
 module(
     name = "rules_uniffi",
+    version = "0.1.1"
 )
 
 bazel_dep(name = "platforms", version = "1.0.0")
@@ -69,17 +70,17 @@ bindeps.annotation(crate = "uniffi", gen_all_binaries = True)
 rust_host_tools = use_extension("@rules_rust//rust:extensions.bzl", "rust_host_tools")
 
 rust_host_tools.host_tools(
-    name = "rust_host_tools_nightly",
+    name = "uniffi_rht_nightly",
     version = "nightly",
 )
 use_repo(
     rust_host_tools,
-    "rust_host_tools_nightly",
+    "uniffi_rht_nightly",
 )
 
 bindeps.from_specs(
   name = "bindeps",
-  host_tools = "@rust_host_tools_nightly",
+  host_tools = "@uniffi_rht_nightly",
 )
 
 use_repo(bindeps, "bindeps")
