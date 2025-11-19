@@ -83,6 +83,14 @@ def _uniffi_kotlin_library_impl(ctx):
     parsed_srcs = []
 
     for i, dep in enumerate(deps.to_list()):
+        dep_deps =  dep.dep.deps.to_list()
+        dep_names = [name.crate_info.name for name in dep_deps]
+        uniffi_names = [ name for name in dep_names if name.find("uniffi") != -1 ]
+        if len(uniffi_names) == 0:
+            print("found unused")
+        else:
+            print("found used, {}".format(len(uniffi_names)))
+
         src = ctx.actions.declare_file("{}_{}_src.kt".format(dep.name, i))
         ctx.actions.run_shell(
             command = """

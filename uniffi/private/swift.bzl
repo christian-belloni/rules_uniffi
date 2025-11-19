@@ -107,12 +107,13 @@ def _uniffi_swift_library_impl(ctx):
     cc_toolchain = find_cc_toolchain(ctx)
     feature_configuration = cc_common.configure_features(ctx = ctx, cc_toolchain = cc_toolchain)
 
-    depinfo = ctx.attr.library[DepInfo].transitive_crates
+    depinfo = ctx.attr.library[DepInfo].direct_crates
     
     dep_sources = []
     dep_headers = []
 
-    for dep in depinfo.to_list():
+    for aliasable_dep in depinfo.to_list():
+        dep = aliasable_dep.dep
         src, header = _extract_sources(ctx, dep)
         dep_headers.append(header)
         dep_sources.append(src)
