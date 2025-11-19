@@ -1,6 +1,10 @@
+
 module(
-    name = "rules_uniffi"
+    name = "rules_uniffi",
 )
+
+bazel_dep(name = "platforms", version = "1.0.0")
+bazel_dep(name = "apple_support", version = "1.24.5", repo_name = "build_bazel_apple_support")
 
 bazel_dep(
     name = "rules_rust",
@@ -9,10 +13,53 @@ bazel_dep(
 
 bazel_dep(
     name = "rules_swift",
-    version = "3.3.0",
+    version = "2.8.2",
 )
 
-bazel_dep(name = "apple_support", version = "1.24.5", repo_name = "build_bazel_apple_support")
+# bazel_dep(name = "rules_swift", version = "3.3.0", repo_name = "build_bazel_rules_swift")
+
+bazel_dep(
+    name = "rules_cc",
+    version = "0.2.14"
+)
+
+bazel_dep(
+    name = "bazel_skylib", 
+    version = "1.8.2"
+)
+
+bazel_dep(
+    name = "rules_kotlin",
+    version = "2.2.0"
+)
+
+bazel_dep(name = "rules_android", version = "0.6.6")
+
+remote_android_extensions = use_extension("@rules_android//bzlmod_extensions:android_extensions.bzl", "remote_android_tools_extensions")
+use_repo(remote_android_extensions, "android_tools")
+
+android_sdk_repository_extension = use_extension("@rules_android//rules/android_sdk_repository:rule.bzl", "android_sdk_repository_extension")
+
+use_repo(android_sdk_repository_extension, "androidsdk")
+
+register_toolchains("@androidsdk//:sdk-toolchain", "@androidsdk//:all")
+
+bazel_dep(name = "rules_jvm_external", version = "6.9")
+
+maven = use_extension("@rules_jvm_external//:extensions.bzl", "maven")
+
+maven.install(
+    name = "uniffi_maven",
+    artifacts = [
+        "net.java.dev.jna:jna:5.18.1",
+        "junit:junit:4.13-beta-3",
+    ],
+    repositories = [
+        "https://repo1.maven.org/maven2",
+    ],
+)
+
+use_repo(maven, "uniffi_maven")
 
 bindeps = use_extension("@rules_rust//crate_universe:extension.bzl", "crate")
 
@@ -43,3 +90,5 @@ crate.spec(package = "uniffi", version = "0.30", default_features = False)
 
 crate.from_specs()
 use_repo(crate, "crates")
+
+
