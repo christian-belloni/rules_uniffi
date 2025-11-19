@@ -79,11 +79,11 @@ def _uniffi_kotlin_library_impl(ctx):
         srcs_dir = [srcs],
         src_out = src
     )
-    deps = ctx.attr.library[DepInfo].transitive_crates
+    deps = ctx.attr.library[DepInfo].direct_crates
     parsed_srcs = []
 
     for dep in deps.to_list():
-        src = ctx.actions.declare_file("%s_src.kt" % dep.name)
+        src = ctx.actions.declare_file("{}_{}_src.kt".format(dep.name))
         ctx.actions.run_shell(
             command = """
             cp {0}/uniffi/{1}/*.kt {2} 2>/dev/null || touch {2}
