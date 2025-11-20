@@ -92,54 +92,54 @@ _uniffi_srcs = rule(
 
 def uniffi_swift_library(*, name, library, uniffi_crates = []):
     native.cc_binary(
-        name = "%s-static" % name,
+        name = "_%s-static" % name,
         deps = [library],
         linkshared = True,
         linkstatic = True,
     )
 
     _uniffi_files(
-        name = "%s-files" % name,
-        shared_lib = "%s-static" % name,
+        name = "_%s-files" % name,
+        shared_lib = "_%s-static" % name,
         uniffi_crates = uniffi_crates
     )
 
     swift_library_group(
         name = name,
-        deps = ["%s-module" % name for name in uniffi_crates] + ["%s-lib" % name for name in uniffi_crates]
+        deps = ["_%s-module" % name for name in uniffi_crates] + ["_%s-lib" % name for name in uniffi_crates]
     )
 
     for crate_name in uniffi_crates:
         _uniffi_headers(
-            name = "%s-headers" % crate_name,
+            name = "_%s-headers" % crate_name,
             crate_name = crate_name,
-            files = "%s-files" % name
+            files = "_%s-files" % name
         )
     
         _uniffi_srcs(
-            name = "%s-srcs" % crate_name,
+            name = "_%s-srcs" % crate_name,
             crate_name = crate_name,
-            files = "%s-files" % name
+            files = "_%s-files" % name
         )
 
         swift_library(
-            name = "%s-module" % crate_name,
-            srcs = ["%s-srcs" % crate_name],
-            private_deps = ["%s-lib" % name for name in uniffi_crates],
+            name = "_%s-module" % crate_name,
+            srcs = ["_%s-srcs" % crate_name],
+            private_deps = ["_%s-lib" % name for name in uniffi_crates],
             module_name = derive_swift_module_name("", crate_name),
             linkstatic = True
         )
 
         swift_interop_hint(
-            name = "%s-interop-hint" % crate_name,
+            name = "_%s-interop-hint" % crate_name,
             module_name = derive_swift_module_name("", crate_name) + "FFI",
         )
 
         native.cc_library(
-            name = "%s-lib" % crate_name,
-            hdrs = ["%s-headers" % crate_name],
+            name = "_%s-lib" % crate_name,
+            hdrs = ["_%s-headers" % crate_name],
             deps = [library],
-            aspect_hints = ["%s-interop-hint" % crate_name],
+            aspect_hints = ["_%s-interop-hint" % crate_name],
             linkstatic = True,
         )
 
