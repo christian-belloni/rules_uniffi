@@ -170,21 +170,36 @@ _uniffi_swift_library = rule(
     implementation = _uniffi_swift_library_impl,
     attrs = {
         "library": attr.label(providers = [CcInfo, CrateInfo], aspects = [swift_clang_module_aspect]),
-        "_uniffi": attr.label(default = Label("//tools:uniffi_bindgen"), executable = True, cfg = "host")
+        "_uniffi": attr.label(default = Label("//tools:uniffi_bindgen"), executable = True, cfg = "host"),
+        "module_name": attr.string(),
+        "omit_argument_labels": attr.bool(default = True),
+        "generate_immutable_records": attr.bool(default = False),
+        "experimental_sendable_value_types": attr.bool(default = False)
     },
     fragments = ["cpp"],
     toolchains = use_cc_toolchain()
 )
 
-def uniffi_swift_library(*, name, library):
+def uniffi_swift_library(*, name, library, module_name = None, omit_argument_labels = True, generate_immutable_records = False, experimental_sendable_value_types = False):
     _uniffi_swift_library(
         name = "_%s_inner" % name,
         library = library
     )
 
-    swift_library(
-        name = name,
-        deps = ["_%s_inner" % name],
-        srcs = ["_%s_inner" % name],
-        module_name = derive_swift_module_name("", Label(library).name),
-    )
+    if module_name:
+        swift_library(
+            name = name,
+            deps = ["_%s_inner" % name],
+            srcs = ["_%s_inner" % name],
+            module_name = module_name,
+            alwayslink = True
+        )
+
+    else:
+        swift_library(
+            name = name,
+            deps = ["_%s_inner" % name],
+            srcs = ["_%s_inner" % name],
+            module_name = derive_swift_module_name("", Label(library).name),
+            alwayslink = True
+        )
