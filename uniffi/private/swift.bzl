@@ -5,6 +5,7 @@ load("@rules_cc//cc:cc_library.bzl", "cc_library")
 load("@rules_cc//cc:cc_static_library.bzl", "cc_static_library")
 load("@rules_cc//cc:cc_binary.bzl", "cc_binary")
 load("@rules_rust//rust:rust_common.bzl", "CrateInfo", "DepInfo")
+load("@rules_rust//rust:defs.bzl", "rust_common", "rust_static_library", "rust_shared_library")
 load("@rules_swift//swift:swift_interop_info.bzl", "create_swift_interop_info")
 load("@rules_swift//swift:swift_clang_module_aspect.bzl", "swift_clang_module_aspect")
 load("@rules_swift//swift:swift_library.bzl", "swift_library")
@@ -14,6 +15,7 @@ load(":common.bzl", "generate_src_action")
 
 SWIFT_CONFIGURATION_TEMPLATE = """
 [bindings.swift]
+# module_name = "{module_name}"
 omit_argument_labels = true
 generate_module_map = false
 generate_immutable_records = true
@@ -68,14 +70,16 @@ def _collect_swift_srcs(*, ctx, srcs_dir, src_out, reimport = True):
         )
 
 
-def _extract_sources(ctx, crate_info):
+def _extract_sources(ctx, crate_info, rust_lib):
     config = ctx.actions.declare_file("%s/uniffi.toml" % crate_info.name)
     ctx.actions.write(
         output = config,
-        content = SWIFT_CONFIGURATION_TEMPLATE
+        content = SWIFT_CONFIGURATION_TEMPLATE.replace("{module_name}", derive_swift_module_name("", crate_info.name))
     )
-    rust_lib = crate_info.output
+    
     out_dir = ctx.actions.declare_directory("_out_%s" % crate_info.name)
+
+    print(out_dir.path)
     
     generate_src_action(
         actions = ctx.actions,
@@ -124,7 +128,7 @@ def _uniffi_swift_library_impl(ctx):
 
     rust_lib = ctx.attr.library[CrateInfo]
 
-    out_sources, out_headers, _ = _extract_sources(ctx, rust_lib)
+    out_sources, out_headers, _ = _extract_sources(ctx, rust_lib, ctx.file.static_library)
 
     dep_headers += [out_headers]
 
@@ -181,6 +185,7 @@ _uniffi_swift_library = rule(
     implementation = _uniffi_swift_library_impl,
     attrs = {
         "library": attr.label(providers = [CcInfo, CrateInfo], aspects = [swift_clang_module_aspect]),
+        "static_library": attr.label(providers = [CcInfo], allow_single_file = True),
         "_uniffi": attr.label(default = Label("//tools:uniffi_bindgen"), executable = True, cfg = "host"),
         "module_name": attr.string(),
         "omit_argument_labels": attr.bool(default = True),
@@ -191,10 +196,32 @@ _uniffi_swift_library = rule(
     toolchains = use_cc_toolchain()
 )
 
+
+def _empty_impl(ctx):
+    out = ctx.actions.declare_file("lib.rs")
+    ctx.actions.write(output = out, content = "")
+    return DefaultInfo(files = depset([out]))
+
+_empty = rule(
+    implementation = _empty_impl,
+)
+
 def uniffi_swift_library(*, name, library, module_name = None, omit_argument_labels = True, generate_immutable_records = False, experimental_sendable_value_types = False):
     _uniffi_swift_library(
         name = "_%s_inner" % name,
         library = library,
+        static_library = "_%s_rust_static" % name
+    )
+
+    _empty(
+        name = "_%s_rust_empty" % name,
+    )
+
+    cc_binary(
+        name = "_%s_rust_static" % name,
+        deps = [library],
+        linkshared = True,
+        visibility = ["//visibility:public"],
     )
 
     if module_name:

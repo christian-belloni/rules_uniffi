@@ -323,7 +323,7 @@
     "@@rules_android+//rules/android_sdk_repository:rule.bzl%android_sdk_repository_extension": {
       "general": {
         "bzlTransitiveDigest": "NAy+0M15JNVEBb8Tny6t7j3lKqTnsAMjoBB6LJ+C370=",
-        "usagesDigest": "OFstHXsXXQrijd+ANapdP7EfzhOD3pyh+xKn4jb14to=",
+        "usagesDigest": "lO4B2OnRLPogRTNfbtFrXiYysrcUYhB7AHaQoolw/XE=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
         "envVariables": {},
@@ -459,7 +459,7 @@
     "@@rules_rust+//crate_universe:extension.bzl%crate": {
       "general": {
         "bzlTransitiveDigest": "es7bCykQoww7is+Qx9uAJhSv+mO0/LwSOAM8U+cOcpU=",
-        "usagesDigest": "rLVJL7JrkAUddQyB6qFH3Kap7rckWmsv8je7ScdmLxQ=",
+        "usagesDigest": "Rd5TiwTrtJNvW0TdpsITm6bRU12ak5Yw6NiYRPqZpvE=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
         "envVariables": {
@@ -1819,7 +1819,7 @@
     "@@rules_rust+//crate_universe:extensions.bzl%crate": {
       "general": {
         "bzlTransitiveDigest": "6DG8sn3YiXtPLKCpgmwjZPvuC++agRRBkn62FETZtiU=",
-        "usagesDigest": "3lb6v4LxW+iGfgjgwaLAo6gay/7hjumcpuouWmauQzU=",
+        "usagesDigest": "VH6WTE0VIo3/a49EaxU1jgYXKw26TISJgA4wnnC6lyY=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
         "envVariables": {

@@ -6,9 +6,18 @@ load("@rules_kotlin//kotlin:jvm.bzl", "kt_jvm_test")
 load("@rules_kotlin//kotlin:android.bzl", "kt_android_local_test")
 
 
-
 rust_library(
     name = "my-lib",
+    srcs = ["my_library.rs"],
+    deps = ["@crates//:uniffi-0.30.0"],
+    compile_data = ["Cargo.toml"],
+    visibility = ["//visibility:public"],
+    alwayslink = True
+)
+
+rust_static_library(
+    name = "my-lib_static",
+    crate_name = "my_lib",
     srcs = ["my_library.rs"],
     deps = ["@crates//:uniffi-0.30.0"],
     compile_data = ["Cargo.toml"],
@@ -17,7 +26,8 @@ rust_library(
 
 uniffi_swift_library(
     name = "my-swift-lib",
-    library = "my-lib"
+    library = "my-lib",
+    uniffi_crates = ["my_lib"]
 )
 
 uniffi_kotlin_library(
