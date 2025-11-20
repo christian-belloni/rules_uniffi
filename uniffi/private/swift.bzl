@@ -1,6 +1,7 @@
 load("@rules_cc//cc:find_cc_toolchain.bzl", "use_cc_toolchain", "find_cc_toolchain")
 load("@rules_cc//cc/common:cc_common.bzl", "cc_common")
 load("@rules_cc//cc/common:cc_info.bzl", "CcInfo")
+load("@rules_cc//cc:cc_library.bzl", "cc_library")
 load("@rules_rust//rust:rust_common.bzl", "CrateInfo", "DepInfo")
 load("@rules_swift//swift:swift_interop_info.bzl", "create_swift_interop_info")
 load("@rules_swift//swift:swift_clang_module_aspect.bzl", "swift_clang_module_aspect")
@@ -136,7 +137,12 @@ def _uniffi_swift_library_impl(ctx):
         srcs = [out_headers] + dep_headers
     )
 
-    ccinfo = CcInfo(compilation_context = compilation_context, linking_context = ccinfo.linking_context)
+    ccinfo = CcInfo(
+        compilation_context = cc_common.merge_compilation_contexts(
+            compilation_contexts = [ccinfo.compilation_context, compilation_context], 
+        ),
+        linking_context = ccinfo.linking_context
+    )
 
     src_out = ctx.actions.declare_file("%s_srcs.swift" % ctx.attr.name)
 

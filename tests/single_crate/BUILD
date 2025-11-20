@@ -31,9 +31,15 @@ uniffi_kotlin_library(
 #     library = ":my-lib"
 # )
 
+swift_library(
+    name = "transitive",
+    srcs = ["transitive.swift"],
+    deps = [":my-swift-lib"],
+)
+
 swift_test(
     name = "my-swift-bin",
-    deps = [":my-swift-lib"],
+    deps = ["transitive"],
     srcs = ["main.swift"],
 )
 
