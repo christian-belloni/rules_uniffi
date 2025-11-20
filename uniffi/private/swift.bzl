@@ -2,6 +2,8 @@ load("@rules_cc//cc:find_cc_toolchain.bzl", "use_cc_toolchain", "find_cc_toolcha
 load("@rules_cc//cc/common:cc_common.bzl", "cc_common")
 load("@rules_cc//cc/common:cc_info.bzl", "CcInfo")
 load("@rules_cc//cc:cc_library.bzl", "cc_library")
+load("@rules_cc//cc:cc_static_library.bzl", "cc_static_library")
+load("@rules_cc//cc:cc_binary.bzl", "cc_binary")
 load("@rules_rust//rust:rust_common.bzl", "CrateInfo", "DepInfo")
 load("@rules_swift//swift:swift_interop_info.bzl", "create_swift_interop_info")
 load("@rules_swift//swift:swift_clang_module_aspect.bzl", "swift_clang_module_aspect")
@@ -37,7 +39,7 @@ def _collect_swift_srcs(*, ctx, srcs_dir, src_out, reimport = True):
     args = ctx.actions.args()
     args.add_all(depset(srcs_dir))
 
-    if not reimport:
+    if not reimport or True:
         ctx.actions.run_shell(
             command = """
             for f in $@
@@ -72,10 +74,9 @@ def _extract_sources(ctx, crate_info):
         output = config,
         content = SWIFT_CONFIGURATION_TEMPLATE
     )
-
     rust_lib = crate_info.output
     out_dir = ctx.actions.declare_directory("_out_%s" % crate_info.name)
-
+    
     generate_src_action(
         actions = ctx.actions,
         tool = ctx.executable._uniffi,
@@ -101,7 +102,15 @@ def _extract_sources(ctx, crate_info):
         extension = "h"
     )
 
-    return out_sources, out_headers
+    out_module_map = ctx.actions.declare_directory("_%s_out_modulemap" % crate_info.name)
+    _extract_by_extension(
+        actions = ctx.actions,
+        in_dir = out_dir,
+        out_dir = out_module_map,
+        extension = "modulemap"
+    )
+
+    return out_sources, out_headers, out_module_map
 
 
 def _uniffi_swift_library_impl(ctx):
@@ -113,15 +122,9 @@ def _uniffi_swift_library_impl(ctx):
     dep_sources = []
     dep_headers = []
 
-    for aliasable_dep in depinfo.to_list():
-        dep = aliasable_dep.dep
-        src, header = _extract_sources(ctx, dep)
-        dep_headers.append(header)
-        dep_sources.append(src)
-
     rust_lib = ctx.attr.library[CrateInfo]
 
-    out_sources, out_headers = _extract_sources(ctx, rust_lib)
+    out_sources, out_headers, _ = _extract_sources(ctx, rust_lib)
 
     dep_headers += [out_headers]
 
@@ -165,8 +168,10 @@ def _uniffi_swift_library_impl(ctx):
         )
         srcs_out.append(_src_out)
     
+    module_name = derive_swift_module_name("", ctx.attr.library.label.name + "FFI")
+    print(module_name)
     interop = create_swift_interop_info(
-        module_name = "%sFFI" % derive_swift_module_name("", ctx.attr.library.label.name),
+        module_name = module_name
     )
 
     return [interop, DefaultInfo(files = depset([src_out] + srcs_out)), ccinfo]
@@ -189,7 +194,7 @@ _uniffi_swift_library = rule(
 def uniffi_swift_library(*, name, library, module_name = None, omit_argument_labels = True, generate_immutable_records = False, experimental_sendable_value_types = False):
     _uniffi_swift_library(
         name = "_%s_inner" % name,
-        library = library
+        library = library,
     )
 
     if module_name:

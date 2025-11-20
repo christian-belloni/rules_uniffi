@@ -13,12 +13,11 @@ rust_library(
     deps = ["@crates//:uniffi-0.30.0"],
     compile_data = ["Cargo.toml"],
     visibility = ["//visibility:public"],
-    alwayslink = True
 )
 
 uniffi_swift_library(
     name = "my-swift-lib",
-    library = ":my-lib"
+    library = "my-lib"
 )
 
 uniffi_kotlin_library(
