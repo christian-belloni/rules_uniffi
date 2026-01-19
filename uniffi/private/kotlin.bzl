@@ -145,15 +145,25 @@ def uniffi_android_library(*, name, library, generate_immutable_records = False,
         android_cleaner = True
     )
 
+    cc_library(
+      name = "%s_jni_shim" % name,
+      srcs = ["android_link_hack.c"],  # Required because of https://github.com/bazelbuild/rules_rust/issues/1271
+      linkopts = [
+          "-lm",  # Required to avoid dlopen runtime failures unrelated to rust
+      ],
+      deps = [library],
+      alwayslink = True,  # Required since JNI symbols appear to be unused
+    )
+
     android_library(
         name = "_%s_android_compiled" % name,
-        exports  = [library],
+        exports  = ["%s_jni_shim" % name],
     )
 
     kt_android_library(
         name = name,
         srcs = [":_%s_android_inner" % name],
-        deps = ["@rules_uniffi//tools:jna", library],
+        deps = ["@rules_uniffi//tools:jna", "_%s_android_compiled" % name],
     )
 
 
