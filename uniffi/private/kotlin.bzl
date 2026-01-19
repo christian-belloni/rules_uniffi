@@ -153,7 +153,7 @@ def uniffi_android_library(*, name, library, generate_immutable_records = False,
     kt_android_library(
         name = name,
         srcs = [":_%s_android_inner" % name],
-        deps = ["@uniffi_maven//:net_java_dev_jna_jna", "_%s_android_compiled" % name],
+        deps = ["//tools:jna", "_%s_android_compiled" % name],
     )
 
 
@@ -181,7 +181,7 @@ def uniffi_kotlin_library(*, name, library, generate_immutable_records = False):
     kt_jvm_library(
         name = name,
         srcs = [":_%s_kotlin_inner" % name],
-        deps = ["@uniffi_maven//:net_java_dev_jna_jna", "_%s_kotlin_compiled" % name],
+        deps = ["//tools:jna", "_%s_kotlin_compiled" % name],
     )
 
 

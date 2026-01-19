@@ -3,3 +3,8 @@ alias(
     actual = "@bindeps//:uniffi__uniffi-bindgen",
     visibility = ["//visibility:public"],
 )
+
+alias(
+  name = "jna",
+  actual = "@uniffi_maven//:net_java_dev_jna_jna"
+)
