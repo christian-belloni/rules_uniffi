@@ -153,7 +153,7 @@ def uniffi_android_library(*, name, library, generate_immutable_records = False,
     kt_android_library(
         name = name,
         srcs = [":_%s_android_inner" % name],
-        deps = ["@rules_uniffi//tools:jna", "_%s_android_compiled" % name],
+        deps = ["@rules_uniffi//tools:jna", "_%s_android_compiled" % name, "@rules_uniffi//tools:annotation"],
     )
 
 

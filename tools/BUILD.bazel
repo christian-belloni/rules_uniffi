@@ -9,3 +9,9 @@ alias(
   actual = "@uniffi_maven//:net_java_dev_jna_jna",
   visibility = ["//visibility:public"],
 )
+
+alias(
+  name = "annotation",
+  actual = "@uniffi_maven//:androidx_annotation_annotation",
+  visibility = ["//visibility:public"],
+)
