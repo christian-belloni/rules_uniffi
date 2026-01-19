@@ -6,5 +6,6 @@ alias(
 
 alias(
   name = "jna",
-  actual = "@uniffi_maven//:net_java_dev_jna_jna"
+  actual = "@uniffi_maven//:net_java_dev_jna_jna",
+  visibility = ["//visibility:public"],
 )

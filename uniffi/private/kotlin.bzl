@@ -84,7 +84,7 @@ def _uniffi_kotlin_library_impl(ctx):
 
     for i, dep in enumerate(deps.to_list()):
         dep_deps =  dep.dep.deps.to_list()
-        dep_names = [name.crate_info.name for name in dep_deps]
+        dep_names = [name.crate_info.name for name in dep_deps if name.crate_info != None]
         uniffi_names = [ name for name in dep_names if name.find("uniffi") != -1 ]
         if len(uniffi_names) == 0:
             print("found unused")
