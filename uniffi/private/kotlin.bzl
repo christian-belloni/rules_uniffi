@@ -147,7 +147,7 @@ def uniffi_android_library(*, name, library, generate_immutable_records = False,
 
     cc_library(
       name = "%s_jni_shim" % name,
-      srcs = ["android_link_hack.c"],  # Required because of https://github.com/bazelbuild/rules_rust/issues/1271
+      srcs = ["@rules_uniffi//tools:android_link_hack.c"],  # Required because of https://github.com/bazelbuild/rules_rust/issues/1271
       linkopts = [
           "-lm",  # Required to avoid dlopen runtime failures unrelated to rust
       ],

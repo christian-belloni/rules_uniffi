@@ -15,3 +15,5 @@ alias(
   actual = "@uniffi_maven//:androidx_annotation_annotation",
   visibility = ["//visibility:public"],
 )
+
+exports_files(["android_link_hack.c"])
