@@ -117,8 +117,8 @@ def _uniffi_kotlin_library_impl(ctx):
 _uniffi_kotlin_library = rule(
     implementation = _uniffi_kotlin_library_impl,
     attrs = {
-        "library": attr.label(providers = [CrateInfo]),
-        "shared_library": attr.label(allow_single_file = True),
+        "library": attr.label(providers = [CrateInfo], cfg = host_library_transition),
+        "shared_library": attr.label(allow_single_file = True, cfg = host_library_transition),
         "generate_immutable_records": attr.bool(default = False),
         "android": attr.bool(default = False),
         "android_cleaner": attr.bool(default = False),
@@ -166,6 +166,15 @@ def uniffi_android_library(*, name, library, generate_immutable_records = False,
         deps = ["@rules_uniffi//tools:jna", "_%s_android_compiled" % name],
     )
 
+
+def _host_library_transition_impl(settings, attr):
+    return {"//command_line_option:platforms": "@local_config_platform//:host"}
+
+host_library_transition = transition(
+    implementation = _host_library_transition_impl,
+    inputs = [],
+    outputs = ["//command_line_option:platforms"],
+)
 
 def uniffi_kotlin_library(*, name, library, generate_immutable_records = False):
     shared_name = "_%s_kotlin" % Label(library).name.replace("-", "_")
