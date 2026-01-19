@@ -20,7 +20,7 @@ cc_binary(
 rust_library(
     name = "crate-2",
     srcs = ["my_library_2.rs"],
-    deps = ["@crates//:uniffi-0.30.0", "//tests/multi_crates/crate-1"],
+    deps = ["@crates//:uniffi-0.31.0", "//tests/multi_crates/crate-1"],
     compile_data = ["Cargo.toml"],
     visibility = ["//visibility:public"],
     alwayslink = True
