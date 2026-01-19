@@ -13,6 +13,15 @@ load(":common.bzl", "generate_src_action")
 load(":utils.bzl", _compile_java_jar = "compile_java_jar")
 
 
+def _host_library_transition_impl(settings, attr):
+    return {"//command_line_option:platforms": "@local_config_platform//:host"}
+
+host_library_transition = transition(
+    implementation = _host_library_transition_impl,
+    inputs = [],
+    outputs = ["//command_line_option:platforms"],
+)
+
 KOTLIN_CONFIGURATION_TEMPLATE = """
 [bindings.kotlin]
 generate_immutable_records = {generate_immutable_records}
@@ -166,15 +175,6 @@ def uniffi_android_library(*, name, library, generate_immutable_records = False,
         deps = ["@rules_uniffi//tools:jna", "_%s_android_compiled" % name],
     )
 
-
-def _host_library_transition_impl(settings, attr):
-    return {"//command_line_option:platforms": "@local_config_platform//:host"}
-
-host_library_transition = transition(
-    implementation = _host_library_transition_impl,
-    inputs = [],
-    outputs = ["//command_line_option:platforms"],
-)
 
 def uniffi_kotlin_library(*, name, library, generate_immutable_records = False):
     shared_name = "_%s_kotlin" % Label(library).name.replace("-", "_")
