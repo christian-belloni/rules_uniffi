@@ -126,7 +126,7 @@ def _uniffi_kotlin_library_impl(ctx):
 _uniffi_kotlin_library = rule(
     implementation = _uniffi_kotlin_library_impl,
     attrs = {
-        "library": attr.label(providers = [CrateInfo], cfg = host_library_transition),
+        "library": attr.label(providers = [CrateInfo]),
         "shared_library": attr.label(allow_single_file = True, cfg = host_library_transition),
         "generate_immutable_records": attr.bool(default = False),
         "android": attr.bool(default = False),
