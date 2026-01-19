@@ -129,11 +129,16 @@ _uniffi_kotlin_library = rule(
 
 def uniffi_android_library(*, name, library, generate_immutable_records = False, package_name = "uniffi"):
     shared_name = "_%s_android" % Label(library).name.replace("-", "_")
-    cc_binary(
-        name = shared_name,
-        deps = [library],
-        linkshared = True,
-        visibility = ["//visibility:public"],
+
+    cc_library(
+      name = shared_name,
+      deps = [library],
+      alwayslink = True,
+      visibility = ["//visibility:public"],
+      linkopts = [
+        "-lm",  # Required to avoid dlopen runtime failures unrelated to rust
+      ],
+      srcs = ["android_link_hack.c"],
     )
 
     _uniffi_kotlin_library(
