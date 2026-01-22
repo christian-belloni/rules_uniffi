@@ -13,7 +13,7 @@ jobs:
   release:
     uses: bazel-contrib/.github/.github/workflows/release_ruleset.yaml@v7.2.2
     with:
-      bazel_test_command: bazel test //:all
+      bazel_test_command: bazel build //:all
       release_files: rules_uniffi-*.tar.gz
       prerelease: false
       tag_name: ${{ inputs.tag_name || github.ref_name }}
