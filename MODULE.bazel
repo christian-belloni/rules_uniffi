@@ -1,6 +1,9 @@
-### Android
 
 module(name = "rules_uniffi", version="0.1.0")
+
+bazel_dep(name = "platforms", version = "1.0.0")
+
+### Android
 
 bazel_dep(name = "rules_java", version = "9.3.0")
 bazel_dep(name = "bazel_skylib", version = "1.8.2")
@@ -42,7 +45,7 @@ bindeps = use_extension("@rules_rust//crate_universe:extension.bzl", "crate")
 bindeps.spec(package = "uniffi", version = "=0.31.0", artifact = "bin", features = ["cli"], default_features = False)
 bindeps.annotation(crate = "uniffi", gen_all_binaries = True)
 
-bindeps.from_specs(name = "bindeps", host_tools = "@rust_host_tools_nightly")
+bindeps.from_specs(name = "bindeps", host_tools = "@rust_host_tools_nightly", isolated = True)
 
 use_repo(bindeps, "bindeps")
 
@@ -64,12 +67,24 @@ use_repo(maven, "u_maven")
 
 # rules_cc
 
+bazel_dep(name = "apple_support", version = "2.2.0", repo_name = "build_bazel_apple_support")
+
 bazel_dep(name = "rules_cc", version= "0.2.16")
 
 # Swift
 
 bazel_dep(name = "rules_swift", version = "3.4.2")
+single_version_override(module_name = "rules_swift", version = "3.4.2")
 
 # Kotlin
 
 bazel_dep(name = "rules_kotlin", version = "2.2.2")
+
+# Testing
+
+build_test_crates = use_extension("@rules_rust//crate_universe:extension.bzl", "crate")
+
+build_test_crates.spec(package = "uniffi", version = "=0.31.0", features = ["cli"], default_features = False)
+build_test_crates.from_specs(name = "build_test_crates", isolated = True)
+
+use_repo(build_test_crates, "build_test_crates")
