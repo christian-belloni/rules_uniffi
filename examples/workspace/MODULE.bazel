@@ -1,7 +1,15 @@
 local_repository = use_repo_rule("@bazel_tools//tools/build_defs/repo:local.bzl", "local_repository")
 
-bazel_dep(name = "rules_uniffi")
-local_path_override(module_name = "rules_uniffi", path = "../..")
+# bazel_dep(name = "rules_uniffi")
+# local_path_override(module_name = "rules_uniffi", path = "../..")
+
+bazel_dep(name = "rules_uniffi", version = "0.1.0")
+archive_override(
+  module_name = "rules_uniffi",
+  strip_prefix = "rules_uniffi-0.1.0",
+  urls = ["https://github.com/christian-belloni/rules_uniffi/releases/download/v0.1.0/rules_uniffi-v0.1.0.tar.gz"],
+  sha256 = "11e5bf90a81b075693f41a93b24c5ebe5b561625152583dc11b4861ef4b89370"
+)
 
 bazel_dep(name = "platforms", version = "1.0.0")
 

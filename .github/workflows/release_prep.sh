@@ -35,7 +35,8 @@ bazel_dep(name = "rules_uniffi", version = "${TAG:1}")
 archive_override(
   module_name = "rules_uniffi",
   urls = ["https://github.com/christian-belloni/rules_uniffi/releases/download/${TAG}/${ARCHIVE}"],
-  integrity = "${SHA}"
+  sha256 = "${SHA}",
+  strip_prefix = "${PREFIX}"
 )
 \`\`\`
 
