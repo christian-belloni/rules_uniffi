@@ -1,0 +1,79 @@
+### Android
+
+module(name = "rules_uniffi")
+
+bazel_dep(name = "rules_java", version = "9.3.0")
+bazel_dep(name = "bazel_skylib", version = "1.8.2")
+
+bazel_dep(name = "rules_android", version = "0.7.0")
+
+remote_android_extensions = use_extension(
+    "@rules_android//bzlmod_extensions:android_extensions.bzl",
+    "remote_android_tools_extensions")
+use_repo(remote_android_extensions, "android_tools")
+
+android_sdk_repository_extension = use_extension("@rules_android//rules/android_sdk_repository:rule.bzl", "android_sdk_repository_extension")
+use_repo(android_sdk_repository_extension, "androidsdk")
+
+register_toolchains("@androidsdk//:sdk-toolchain", "@androidsdk//:all")
+
+bazel_dep(name = "rules_android_ndk", version = "0.1.3")
+
+android_ndk_repository_extension = use_extension("@rules_android_ndk//:extension.bzl", "android_ndk_repository_extension")
+use_repo(android_ndk_repository_extension, "androidndk")
+
+register_toolchains("@androidndk//:all")
+
+### Rust
+
+bazel_dep(name = "rules_rust", version = "0.68.1")
+
+rust_host_tools = use_extension("@rules_rust//rust:extensions.bzl", "rust_host_tools")
+rust_host_tools.host_tools(
+    name = "rust_host_tools_nightly",
+    version = "nightly",
+)
+use_repo(
+    rust_host_tools,
+    "rust_host_tools_nightly",
+)
+
+bindeps = use_extension("@rules_rust//crate_universe:extension.bzl", "crate")
+
+bindeps.spec(package = "uniffi", version = "=0.31.0", artifact = "bin", features = ["cli"], default_features = False)
+bindeps.annotation(crate = "uniffi", gen_all_binaries = True)
+
+bindeps.from_specs(
+  name = "bindeps",
+  host_tools = "@rust_host_tools_nightly",
+)
+
+use_repo(bindeps, "bindeps")
+
+### Jna deps
+
+bazel_dep(name = "rules_jvm_external", version = "6.9")
+maven = use_extension("@rules_jvm_external//:extensions.bzl", "maven")
+maven.install(
+  aar_import_bzl_label = "@rules_android//rules:rules.bzl",
+  name = "u_maven",
+  artifacts = [
+      "net.java.dev.jna:jna:5.18.1@aar",
+  ],
+  repositories = ["https://repo1.maven.org/maven2"],
+  use_starlark_android_rules = True
+)
+
+use_repo(maven, "u_maven")
+
+# rules_cc
+
+bazel_dep(name = "rules_cc", version= "0.2.16")
+
+# Swift
+
+bazel_dep(name = "rules_swift", version = "3.4.2")
+
+# Kotlin
+
+bazel_dep(name = "rules_kotlin", version = "2.2.2")
