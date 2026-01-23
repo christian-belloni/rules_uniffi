@@ -296,7 +296,7 @@
     "@@rules_android+//rules/android_sdk_repository:rule.bzl%android_sdk_repository_extension": {
       "general": {
         "bzlTransitiveDigest": "+rMrzIrv7sImYmkbXJYv+gFpTJQ79X3MpwwMLI2A+oA=",
-        "usagesDigest": "PRI7QZ6h6gi+BooErDMo4YjrlHfgkSumsoI6HEK32G4=",
+        "usagesDigest": "F/Phc1B2SkKRtuPoGTCfiENVcj0KBX/YxfyQYTuF0HI=",
         "recordedInputs": [],
         "generatedRepoSpecs": {
           "androidsdk": {
@@ -309,7 +309,7 @@
     "@@rules_android_ndk+//:extension.bzl%android_ndk_repository_extension": {
       "general": {
         "bzlTransitiveDigest": "j+NMXk5/a1vnDypModKL+ToEo/4o7DJeXSFhTfbJ7rI=",
-        "usagesDigest": "O+qxxcreiXWxhLYmzmdlzEIFDh92CpSf0/DOyioon0c=",
+        "usagesDigest": "Oma9gSlxxJkYdEd3az6xE6ac3JVQPg3ZyJ+I6n/H8IU=",
         "recordedInputs": [],
         "generatedRepoSpecs": {
           "androidndk": {
@@ -520,7 +520,7 @@
     "@@rules_rust+//crate_universe:extension.bzl%crate": {
       "general": {
         "bzlTransitiveDigest": "RJpzElnJclpivxfYqzUhF/ChsQulhe5qCHaGylfu3SA=",
-        "usagesDigest": "MpJ7bR3eIf6IaSf/b7WqnTVOVypA3LmDc4M9Lny0jYw=",
+        "usagesDigest": "zNrpE1zdcO3RefDoO0Tf/paYthedPKnAn8mfL3fvqO4=",
         "recordedInputs": [
           "ENV:CARGO_BAZEL_DEBUG \\0",
           "ENV:CARGO_BAZEL_GENERATOR_SHA256 \\0",
