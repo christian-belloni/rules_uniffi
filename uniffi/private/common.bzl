@@ -13,7 +13,8 @@ def _uniffi_library(ctx):
     name=ctx.attr.name,
     language = "swift",
     executable = ctx.executable._uniffi_swift,
-    library = ctx.file.static_library
+    library = ctx.file.static_library,
+    uniffi_toml = ctx.file.uniffi_toml
   )
 
   kotlin_dir = generate(
@@ -21,7 +22,8 @@ def _uniffi_library(ctx):
     name=ctx.attr.name,
     language = "kotlin",
     executable = ctx.executable._uniffi,
-    library = ctx.file.shared_library
+    library = ctx.file.shared_library,
+    uniffi_toml = ctx.file.uniffi_toml
   )
 
   kotlin_info = extract_kotlin_info(
@@ -50,7 +52,8 @@ uniffi_library = rule(
     "library": attr.label(providers = [CrateInfo], aspects = [dependency_aspect]),
     "static_library": attr.label(providers=[CcInfo], allow_single_file = True, cfg="exec"),
     "shared_library": attr.label(providers=[CcInfo], allow_single_file = True),
+    "uniffi_toml": attr.label(allow_single_file = True),
     "_uniffi": attr.label(executable = True, cfg = "exec", default=Label("@rules_uniffi//tools:uniffi")),
-    "_uniffi_swift": attr.label(executable = True, cfg = "exec", default=Label("@rules_uniffi//tools:uniffi-swift")),
+    "_uniffi_swift": attr.label(executable = True, cfg = "exec", default=Label("@rules_uniffi//tools:uniffi")),
   }
 )

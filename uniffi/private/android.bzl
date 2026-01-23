@@ -18,8 +18,6 @@ _uniffi_srcs = rule(
 def _uniffi_lib_impl(ctx):
   info = ctx.attr.uniffi_library[UniffiKotlinInfo]
 
-  print(info.shared_library[0].files.to_list()[0]) 
-
   return info.shared_library
 
 

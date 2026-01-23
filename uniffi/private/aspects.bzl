@@ -19,7 +19,9 @@ def _dependency_aspect_impl(target, ctx):
         is_uniffi_crate = True
         break
     if is_uniffi_crate:
-      generated_files += [dep[CrateInfo].name.replace("-", "_")]
+      filename = dep[CrateInfo].name.replace("-", "_")
+      if filename not in generated_files:
+        generated_files += [filename]
 
   return UniffiDepInfo(
     main_crate = main_crate,

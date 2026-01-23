@@ -39,7 +39,7 @@ _uniffi_static = rule(
   }
 )
 
-def uniffi_swift(*, name, module_name, uniffi_library):
+def uniffi_swift(*, name, ffi_module_name, uniffi_library, **kwargs):
   _uniffi_hdrs(
     name = "__%s_hdrs" % name,
     uniffi_library = uniffi_library,
@@ -54,7 +54,7 @@ def uniffi_swift(*, name, module_name, uniffi_library):
 
   swift_interop_hint(
     name = "__%s_interop_hint" % name,
-    module_name = module_name + "FFI",
+    module_name = ffi_module_name + "FFI",
     visibility = ["//visibility:private"]
   )
 
@@ -78,4 +78,5 @@ def uniffi_swift(*, name, module_name, uniffi_library):
     srcs = ["__%s_srcs" % name],
     deps = ["__%s_static" % name],
     alwayslink = True,
+    **kwargs
   )

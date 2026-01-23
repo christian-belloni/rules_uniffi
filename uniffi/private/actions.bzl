@@ -3,22 +3,23 @@ load("@rules_cc//cc:defs.bzl", "CcInfo")
 load(":providers.bzl", "UniffiKotlinInfo", "UniffiSwiftInfo")
 
 
-SWIFT_ARGS = ["--swift-sources", "--headers"]
+# SWIFT_ARGS = ["--swift-sources", "--headers"]
 KOTLIN_ARGS = ["generate", "-l", "kotlin", "--no-format", "--out-dir"]
+SWIFT_ARGS = ["generate", "-l", "swift", "--no-format", "--out-dir"]
 
-def generate(*, name, actions, executable, language, library):
+def generate(*, name, actions, executable, language, library, uniffi_toml):
   outdir = actions.declare_directory("__{}_{}_outdir".format(name, language))
   args = []
   if language == "swift":
-    args = SWIFT_ARGS + [library.path, outdir.path]
+    args = SWIFT_ARGS + [outdir.path, library.path] + ["--config", uniffi_toml.path]
   elif language == "kotlin":
-    args = KOTLIN_ARGS + [outdir.path, library.path]
+    args = KOTLIN_ARGS + [outdir.path, library.path] + ["--config", uniffi_toml.path]
   else:
     fail("language must be one of [swift, kotlin], was %s" % language)
 
   actions.run(
     executable = executable,
-    inputs = [library],
+    inputs = [library, uniffi_toml],
     outputs = [outdir],
     arguments = args
   )
@@ -77,11 +78,16 @@ def extract_swift_info(*, actions, swift_dir, main_crate, deps, static_library):
   srcs = [main_src]
   hdrs = [main_hdr]
 
+  import_header = [IMPORT_TEMPLATE.replace("{module}", main_crate)]
+
+  import_header += [ IMPORT_TEMPLATE.replace("{module}", x) for x in deps ]
+
+  import_header = "\n".join(import_header)
 
   for dep in deps:
     dep_src = actions.declare_file("%s.swift" % dep)
     actions.run_shell(
-      command = "echo '{3}' > {2} && cat {0}/{1}.swift >> {2}".format(swift_dir.path, dep, dep_src.path, IMPORT_TEMPLATE.replace("{module}", main_crate)),
+      command = "echo '{3}' > {2} && cat {0}/{1}.swift >> {2}".format(swift_dir.path, dep, dep_src.path, import_header),
       inputs = [swift_dir],
       outputs = [dep_src]
     )
