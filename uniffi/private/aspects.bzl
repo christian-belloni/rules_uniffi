@@ -9,7 +9,6 @@ def _dependency_aspect_impl(target, ctx):
   for dep in ctx.rule.attr.deps:
     if not dep.label.package:
       continue
-    print(dir(dep.actions))
     if not DepInfo in dep:
         continue
 
