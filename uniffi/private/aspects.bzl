@@ -4,10 +4,13 @@ load("@rules_rust//rust:rust_common.bzl", "CrateInfo", "DepInfo")
 def _dependency_aspect_impl(target, ctx):
   main_crate = target.label.name.replace("-", "_")
   generated_files = []
+  if ctx.rule.kind != "rust_library":
+    return []
   for dep in ctx.rule.attr.deps:
     if not dep.label.package:
       continue
-    if not dep[DepInfo]:
+    print(dir(dep.actions))
+    if not DepInfo in dep:
         continue
 
     dep_info = dep[DepInfo]

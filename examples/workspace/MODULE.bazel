@@ -48,7 +48,7 @@ use_repo(android_ndk_repository_extension, "androidndk")
 
 register_toolchains("@androidndk//:all")
 
-bazel_dep(name = "apple_support", version = "2.1.0", repo_name = "build_bazel_apple_support")
+bazel_dep(name = "apple_support", version = "2.2.0", repo_name = "build_bazel_apple_support")
 
 bazel_dep(name = "rules_jvm_external", version = "6.9")
 
