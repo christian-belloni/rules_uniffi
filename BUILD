@@ -1,4 +1,4 @@
 test_suite(
   name = "suite",
-  tests = []
+  tests = ["//tests:all_tests"]
 )
