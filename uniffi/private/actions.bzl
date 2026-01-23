@@ -11,15 +11,20 @@ def generate(*, name, actions, executable, language, library, uniffi_toml):
   outdir = actions.declare_directory("__{}_{}_outdir".format(name, language))
   args = []
   if language == "swift":
-    args = SWIFT_ARGS + [outdir.path, library.path] + ["--config", uniffi_toml.path]
+    args = SWIFT_ARGS + [outdir.path, library.path]
   elif language == "kotlin":
-    args = KOTLIN_ARGS + [outdir.path, library.path] + ["--config", uniffi_toml.path]
+    args = KOTLIN_ARGS + [outdir.path, library.path]
   else:
     fail("language must be one of [swift, kotlin], was %s" % language)
 
+  inputs = [library]
+  if uniffi_toml:
+    args += ["--config", uniffi_toml.path]
+    inputs.append(uniffi_toml)
+
   actions.run(
     executable = executable,
-    inputs = [library, uniffi_toml],
+    inputs = inputs,
     outputs = [outdir],
     arguments = args
   )

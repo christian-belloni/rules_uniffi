@@ -19,7 +19,7 @@ uniffi_library(
 uniffi_swift(
   name = "test-swift-library",
   uniffi_library = ":test-uniffi-library",
-  module_name = "test_library"
+  ffi_module_name = "test_library"
 )
 
 swift_test(
