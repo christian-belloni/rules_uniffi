@@ -50,7 +50,7 @@ uniffi_library = rule(
   implementation = _uniffi_library,
   attrs = {
     "library": attr.label(providers = [CrateInfo], aspects = [dependency_aspect]),
-    "static_library": attr.label(providers=[CcInfo], allow_single_file = True, cfg="exec"),
+    "static_library": attr.label(providers=[CcInfo], allow_single_file = True),
     "shared_library": attr.label(providers=[CcInfo], allow_single_file = True),
     "uniffi_toml": attr.label(allow_single_file = True),
     "_uniffi": attr.label(executable = True, cfg = "exec", default=Label("@rules_uniffi//tools:uniffi")),

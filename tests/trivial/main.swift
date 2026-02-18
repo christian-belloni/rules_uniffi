@@ -1,6 +1,6 @@
 
 import XCTest
-import tests_build_tests_test_swift_library
+import test_library
 
 class BaseTest: XCTestCase {
     /// Tests that a new table instance has zero rows and columns.

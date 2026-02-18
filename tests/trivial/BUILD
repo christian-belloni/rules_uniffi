@@ -19,16 +19,12 @@ uniffi_library(
 uniffi_swift(
   name = "test-swift-library",
   uniffi_library = ":test-uniffi-library",
-  ffi_module_name = "test_library"
+  ffi_module_name = "test_library",
+  module_name = "test_library"
 )
 
 swift_test(
   name = "swift-test",
   srcs = [":main.swift"],
   deps = [":test-swift-library"]
-)
-
-test_suite(
-  name = "all_tests",
-  tests = [":swift-test"]
 )
