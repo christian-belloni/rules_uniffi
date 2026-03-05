@@ -44,12 +44,12 @@ def uniffi_android(name, uniffi_library, **kwargs):
   kt_jvm_library(
     name = "__%s_kt" % name,
     srcs = [":__%s_srcs" % name],
-    deps = ["@rules_uniffi//3rdparty:jna"],
+    deps = ["@rules_uniffi//3rdparty:jna", "@rules_uniffi//3rdparty:coroutines"],
     visibility = ["//visibility:private"]
   )
 
   android_library(
     name = name,
-    exports = ["__%s_lib" % name, "__%s_kt" % name, "@rules_uniffi//3rdparty:jna"],
+    exports = ["__%s_lib" % name, "__%s_kt" % name, "@rules_uniffi//3rdparty:jna", "@rules_uniffi//3rdparty:coroutines"],
     **kwargs
   )

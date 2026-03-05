@@ -58,6 +58,7 @@ maven.install(
   name = "u_maven",
   artifacts = [
       "net.java.dev.jna:jna:5.18.1@aar",
+      "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2"
   ],
   repositories = ["https://repo1.maven.org/maven2"],
   use_starlark_android_rules = True
