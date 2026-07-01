@@ -34,13 +34,16 @@ register_toolchains("@androidndk//:all")
 
 ### Rust
 
-bazel_dep(name = "rules_rust", version = "0.68.1")
+bazel_dep(name = "rules_rs", version = "0.0.94")
 
-rust_host_tools = use_extension("@rules_rust//rust:extensions.bzl", "rust_host_tools")
+rules_rust = use_extension("@rules_rs//rs:rules_rust.bzl", "rules_rust")
+use_repo(rules_rust, "rules_rust")
+
+rust_host_tools = use_extension("@rules_rs//rs:extensions.bzl", "rust_host_tools")
 rust_host_tools.host_tools(name = "rust_host_tools_nightly", version = "nightly")
 use_repo(rust_host_tools, "rust_host_tools_nightly")
 
-bindeps = use_extension("@rules_rust//crate_universe:extension.bzl", "crate")
+bindeps = use_extension("@rules_rs//rs:extensions.bzl", "crate")
 
 bindeps.spec(package = "uniffi", version = "=0.31.0", artifact = "bin", features = ["cli"], default_features = False)
 bindeps.annotation(crate = "uniffi", gen_all_binaries = True)
@@ -83,7 +86,7 @@ bazel_dep(name = "rules_kotlin", version = "2.2.2")
 
 # Testing
 
-build_test_crates = use_extension("@rules_rust//crate_universe:extension.bzl", "crate")
+build_test_crates = use_extension("@rules_rs//rs:extensions.bzl", "crate")
 
 build_test_crates.spec(package = "uniffi", version = "=0.31.0", features = ["cli"], default_features = False)
 build_test_crates.from_specs(name = "build_test_crates", isolated = True)
