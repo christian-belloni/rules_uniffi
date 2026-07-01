@@ -9,7 +9,7 @@ load("@rules_kotlin//kotlin:android.bzl", "kt_android_local_test")
 rust_library(
     name = "my-lib",
     srcs = ["my_library.rs"],
-    deps = ["@crates//:uniffi-0.30.0"],
+    deps = ["@crates//:uniffi-0.31.0"],
     compile_data = ["Cargo.toml"],
     visibility = ["//visibility:public"],
     alwayslink = True

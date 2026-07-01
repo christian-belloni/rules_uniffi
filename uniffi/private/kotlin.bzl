@@ -13,6 +13,15 @@ load(":common.bzl", "generate_src_action")
 load(":utils.bzl", _compile_java_jar = "compile_java_jar")
 
 
+def _host_library_transition_impl(settings, attr):
+    return {"//command_line_option:platforms": "@local_config_platform//:host"}
+
+host_library_transition = transition(
+    implementation = _host_library_transition_impl,
+    inputs = [],
+    outputs = ["//command_line_option:platforms"],
+)
+
 KOTLIN_CONFIGURATION_TEMPLATE = """
 [bindings.kotlin]
 generate_immutable_records = {generate_immutable_records}
@@ -84,7 +93,7 @@ def _uniffi_kotlin_library_impl(ctx):
 
     for i, dep in enumerate(deps.to_list()):
         dep_deps =  dep.dep.deps.to_list()
-        dep_names = [name.crate_info.name for name in dep_deps]
+        dep_names = [name.crate_info.name for name in dep_deps if name.crate_info != None]
         uniffi_names = [ name for name in dep_names if name.find("uniffi") != -1 ]
         if len(uniffi_names) == 0:
             print("found unused")
@@ -117,8 +126,8 @@ def _uniffi_kotlin_library_impl(ctx):
 _uniffi_kotlin_library = rule(
     implementation = _uniffi_kotlin_library_impl,
     attrs = {
-        "library": attr.label(providers = [CrateInfo]),
-        "shared_library": attr.label(allow_single_file = True),
+        "library": attr.label(providers = [CrateInfo], cfg = "exec"),
+        "shared_library": attr.label(allow_single_file = True, cfg = "exec"),
         "generate_immutable_records": attr.bool(default = False),
         "android": attr.bool(default = False),
         "android_cleaner": attr.bool(default = False),
@@ -145,15 +154,25 @@ def uniffi_android_library(*, name, library, generate_immutable_records = False,
         android_cleaner = True
     )
 
+    cc_library(
+      name = "%s_jni_shim" % name,
+      srcs = ["@rules_uniffi//tools:android_link_hack.c"],  # Required because of https://github.com/bazelbuild/rules_rust/issues/1271
+      linkopts = [
+          "-lm",  # Required to avoid dlopen runtime failures unrelated to rust
+      ],
+      deps = [library],
+      alwayslink = True,  # Required since JNI symbols appear to be unused
+    )
+
     android_library(
         name = "_%s_android_compiled" % name,
-        exports  = [shared_name],
+        exports  = ["%s_jni_shim" % name],
     )
 
     kt_android_library(
         name = name,
         srcs = [":_%s_android_inner" % name],
-        deps = ["@uniffi_maven//:net_java_dev_jna_jna", "_%s_android_compiled" % name],
+        deps = ["@rules_uniffi//tools:jna", "_%s_android_compiled" % name],
     )
 
 
@@ -181,7 +200,7 @@ def uniffi_kotlin_library(*, name, library, generate_immutable_records = False):
     kt_jvm_library(
         name = name,
         srcs = [":_%s_kotlin_inner" % name],
-        deps = ["@uniffi_maven//:net_java_dev_jna_jna", "_%s_kotlin_compiled" % name],
+        deps = ["@rules_uniffi//tools:jna", "_%s_kotlin_compiled" % name],
     )
 
 

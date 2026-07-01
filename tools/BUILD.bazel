@@ -3,3 +3,17 @@ alias(
     actual = "@bindeps//:uniffi__uniffi-bindgen",
     visibility = ["//visibility:public"],
 )
+
+alias(
+  name = "jna",
+  actual = "@uniffi_maven//:net_java_dev_jna_jna",
+  visibility = ["//visibility:public"],
+)
+
+alias(
+  name = "annotation",
+  actual = "@uniffi_maven//:androidx_annotation_annotation",
+  visibility = ["//visibility:public"],
+)
+
+exports_files(["android_link_hack.c"])
