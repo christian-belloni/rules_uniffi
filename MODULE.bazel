@@ -1,12 +1,12 @@
 
 module(name = "rules_uniffi", version="0.1.1")
 
-bazel_dep(name = "platforms", version = "1.0.0")
+bazel_dep(name = "platforms", version = "1.1.0")
 
 ### Android
 
 bazel_dep(name = "rules_java", version = "9.3.0")
-bazel_dep(name = "bazel_skylib", version = "1.8.2")
+bazel_dep(name = "bazel_skylib", version = "1.9.0")
 
 bazel_dep(name = "rules_android", version = "0.7.0")
 
@@ -35,19 +35,44 @@ register_toolchains("@androidndk//:all")
 ### Rust
 
 bazel_dep(name = "rules_rs", version = "0.0.94")
+bazel_dep(name = "llvm", version = "0.8.9")
 
-rust_host_tools = use_extension("@rules_rust//rust:extensions.bzl", "rust_host_tools")
-rust_host_tools.host_tools(name = "rust_host_tools_nightly", version = "nightly")
-use_repo(rust_host_tools, "rust_host_tools_nightly")
+toolchains = use_extension("@rules_rs//rs/toolchains:module_extension.bzl", "toolchains")
+toolchains.toolchain(
+    edition = "2024",
+    version = "1.95.0",
+)
+use_repo(toolchains, "default_rust_toolchains")
 
-bindeps = use_extension("@rules_rust//crate_universe:extension.bzl", "crate")
+register_toolchains(
+    "@default_rust_toolchains//:all",
+    "@llvm//toolchain:all",
+)
 
-bindeps.spec(package = "uniffi", version = "=0.31.0", artifact = "bin", features = ["cli"], default_features = False)
-bindeps.annotation(crate = "uniffi", gen_all_binaries = True)
+rules_rust = use_extension("@rules_rs//rs:rules_rust.bzl", "rules_rust")
+use_repo(rules_rust, "rules_rust")
 
-bindeps.from_specs(name = "bindeps", host_tools = "@rust_host_tools_nightly", isolated = True)
+# rust_host_tools = use_extension("@rules_rs//rs:extensions.bzl", "rust_host_tools")
+# rust_host_tools.host_tools(name = "rust_host_tools_nightly", version = "nightly")
+# use_repo(rust_host_tools, "rust_host_tools_nightly")
 
-use_repo(bindeps, "bindeps")
+bindeps = use_extension("@rules_rs//rs:extensions.bzl", "crate")
+
+crate = use_extension("@rules_rs//rs:extensions.bzl", "crate")
+crate.from_cargo(
+    name = "u_deps",
+    cargo_lock = "//3rdparty/uniffi-bin:Cargo.lock",
+    cargo_toml = "//3rdparty/uniffi-bin:Cargo.toml",
+    platform_triples = [
+        "aarch64-apple-darwin",
+        "aarch64-pc-windows-msvc",
+        "aarch64-unknown-linux-gnu",
+        "x86_64-apple-darwin",
+        "x86_64-pc-windows-msvc",
+        "x86_64-unknown-linux-gnu",
+    ],
+)
+use_repo(crate, "u_deps")
 
 ### Jna deps
 
@@ -70,7 +95,7 @@ use_repo(maven, "u_maven")
 
 bazel_dep(name = "apple_support", version = "2.2.0", repo_name = "build_bazel_apple_support")
 
-bazel_dep(name = "rules_cc", version= "0.2.16")
+bazel_dep(name = "rules_cc", version= "0.2.19")
 
 # Swift
 
@@ -81,11 +106,3 @@ single_version_override(module_name = "rules_swift", version = "3.4.2")
 
 bazel_dep(name = "rules_kotlin", version = "2.2.2")
 
-# Testing
-
-build_test_crates = use_extension("@rules_rust//crate_universe:extension.bzl", "crate")
-
-build_test_crates.spec(package = "uniffi", version = "=0.31.0", features = ["cli"], default_features = False)
-build_test_crates.from_specs(name = "build_test_crates", isolated = True)
-
-use_repo(build_test_crates, "build_test_crates")

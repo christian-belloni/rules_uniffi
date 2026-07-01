@@ -5,14 +5,38 @@ local_path_override(
   path = "../.."
 )
 
-bazel_dep(name = "rules_rust", version = "0.68.1")
+bazel_dep(name = "rules_rs", version = "0.0.94")
+bazel_dep(name = "llvm", version = "0.8.9")
 
-crate = use_extension("@rules_rust//crate_universe:extensions.bzl", "crate")
+toolchains = use_extension("@rules_rs//rs/toolchains:module_extension.bzl", "toolchains")
+toolchains.toolchain(
+    edition = "2024",
+    version = "1.95.0",
+)
+use_repo(toolchains, "default_rust_toolchains")
+
+register_toolchains(
+    "@default_rust_toolchains//:all",
+    "@llvm//toolchain:all",
+)
+
+rules_rust = use_extension("@rules_rs//rs:rules_rust.bzl", "rules_rust")
+use_repo(rules_rust, "rules_rust")
+
+crate = use_extension("@rules_rs//rs:extensions.bzl", "crate")
 
 crate.from_cargo(
     name = "crates",
-    cargo_lockfile = "//:Cargo.lock",
-    manifests = ["//:Cargo.toml"],
+    cargo_lock = "//:Cargo.lock",
+    cargo_toml = "//:Cargo.toml",
+    platform_triples = [
+        "aarch64-apple-darwin",
+        "aarch64-pc-windows-msvc",
+        "aarch64-unknown-linux-gnu",
+        "x86_64-apple-darwin",
+        "x86_64-pc-windows-msvc",
+        "x86_64-unknown-linux-gnu",
+    ],
 )
 use_repo(crate, "crates")
 

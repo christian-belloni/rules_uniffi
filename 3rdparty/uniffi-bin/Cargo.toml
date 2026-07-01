@@ -1,0 +1,16 @@
+[package]
+name = "uniffi-bin"
+version = "0.1.0"
+edition = "2024"
+
+
+[[bin]]
+name = "standard"
+path = "src/standard.rs"
+
+[[bin]]
+name = "swift"
+path = "src/swift.rs"
+
+[dependencies]
+uniffi = { version = "=0.31", features = ["cli"], default-features = false }

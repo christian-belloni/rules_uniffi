@@ -1,11 +1,11 @@
 alias(
   name = "uniffi",
-  actual = "@bindeps//:uniffi__uniffi-bindgen",
+  actual = "//3rdparty/uniffi-bin",
   visibility = ["//visibility:public"]
 )
 
 alias(
   name = "uniffi-swift",
-  actual = "@bindeps//:uniffi__uniffi-bindgen-swift",
+  actual = "//3rdparty/uniffi-bin",
   visibility = ["//visibility:public"]
 )

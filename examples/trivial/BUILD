@@ -15,6 +15,7 @@ uniffi_library(
 
 uniffi_swift(
   name = "uniffi_swift",
+  ffi_module_name = "uniffi_swift",
   uniffi_library = ":uniffi-lib",
   module_name = "my_lib",
 )
