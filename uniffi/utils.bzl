@@ -6,12 +6,14 @@ def uniffi_crate(*, name, **kwargs):
     compile_data = kwargs.pop("compile_data", [":Cargo.toml"]),
     **kwargs
   )
+
   rust_shared_library(
     name = name + "_shared",
     crate_name = kwargs.pop("crate_name", name.replace("-", "_")),
     compile_data = kwargs.pop("compile_data", [":Cargo.toml"]),
     **kwargs
   )
+
   rust_static_library(
     name = name + "_static",
     crate_name = kwargs.pop("crate_name", name.replace("-", "_")),
