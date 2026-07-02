@@ -45,7 +45,7 @@ bindeps = use_extension("@rules_rust//crate_universe:extension.bzl", "crate")
 bindeps.spec(package = "uniffi", version = "=0.31.0", artifact = "bin", features = ["cli"], default_features = False)
 bindeps.annotation(crate = "uniffi", gen_all_binaries = True)
 
-bindeps.from_specs(name = "bindeps", host_tools = "@rust_host_tools_nightly", isolated = True, lockfile = ":bindeps.lockfile")
+bindeps.from_specs(name = "bindeps", host_tools = "@rust_host_tools_nightly", isolated = True, cargo_lockfile = ":bindeps.Cargo.lock", lockfile = ":bindeps.lockfile")
 
 use_repo(bindeps, "bindeps")
 
