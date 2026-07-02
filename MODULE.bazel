@@ -83,9 +83,9 @@ bazel_dep(name = "rules_kotlin", version = "2.2.2")
 
 # Testing
 
-build_test_crates = use_extension("@rules_rust//crate_universe:extension.bzl", "crate")
-
-build_test_crates.spec(package = "uniffi", version = "=0.31.0", features = ["cli"], default_features = False)
-build_test_crates.from_specs(name = "build_test_crates", isolated = True)
-
-use_repo(build_test_crates, "build_test_crates")
+# build_test_crates = use_extension("@rules_rust//crate_universe:extension.bzl", "crate")
+# 
+# build_test_crates.spec(package = "uniffi", version = "=0.31.0", features = ["cli"], default_features = False)
+# build_test_crates.from_specs(name = "build_test_crates", isolated = True)
+# 
+# use_repo(build_test_crates, "build_test_crates")
