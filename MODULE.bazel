@@ -34,7 +34,7 @@ register_toolchains("@androidndk//:all")
 
 ### Rust
 
-bazel_dep(name = "rules_rust", version = "0.68.1")
+bazel_dep(name = "rules_rust", version = "0.71.3")
 
 rust_host_tools = use_extension("@rules_rust//rust:extensions.bzl", "rust_host_tools")
 rust_host_tools.host_tools(name = "rust_host_tools_nightly", version = "nightly")
