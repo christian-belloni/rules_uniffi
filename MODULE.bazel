@@ -39,14 +39,14 @@ bazel_dep(name = "llvm", version = "0.8.9")
 
 toolchains = use_extension("@rules_rs//rs/toolchains:module_extension.bzl", "toolchains")
 toolchains.toolchain(
-    name = "_rs_t",
+    name = "rs_t",
     edition = "2024",
     version = "1.95.0",
 )
-use_repo(toolchains, "_rs_t")
+use_repo(toolchains, "rs_t")
 
 register_toolchains(
-    "@_rs_t//:all",
+    "@rs_t//:all",
     "@llvm//toolchain:all",
 )
 
