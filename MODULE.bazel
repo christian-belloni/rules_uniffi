@@ -40,12 +40,6 @@ bazel_dep(name = "llvm", version = "0.8.9")
 rules_rust = use_extension("@rules_rs//rs:rules_rust.bzl", "rules_rust")
 use_repo(rules_rust, "rules_rust")
 
-# rust_host_tools = use_extension("@rules_rs//rs:extensions.bzl", "rust_host_tools")
-# rust_host_tools.host_tools(name = "rust_host_tools_nightly", version = "nightly")
-# use_repo(rust_host_tools, "rust_host_tools_nightly")
-
-bindeps = use_extension("@rules_rs//rs:extensions.bzl", "crate")
-
 crate = use_extension("@rules_rs//rs:extensions.bzl", "crate")
 crate.from_cargo(
     name = "u_deps",
@@ -71,6 +65,7 @@ maven.install(
   name = "u_maven",
   artifacts = [
       "net.java.dev.jna:jna:5.18.1@aar",
+      "net.java.dev.jna:jna:5.18.1",
       "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2"
   ],
   repositories = ["https://repo1.maven.org/maven2"],
@@ -83,7 +78,7 @@ use_repo(maven, "u_maven")
 
 bazel_dep(name = "apple_support", version = "2.2.0", repo_name = "build_bazel_apple_support")
 
-bazel_dep(name = "rules_cc", version= "0.2.19")
+bazel_dep(name = "rules_cc", version= "0.2.20")
 
 # Swift
 
