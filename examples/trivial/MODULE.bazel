@@ -18,6 +18,7 @@ use_repo(toolchains, "default_rust_toolchains")
 register_toolchains(
     "@default_rust_toolchains//...",
     "@llvm//toolchain:all",
+    dev_dependency = True,
 )
 
 rules_rust = use_extension("@rules_rs//rs:rules_rust.bzl", "rules_rust")
