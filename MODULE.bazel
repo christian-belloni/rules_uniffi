@@ -34,8 +34,8 @@ register_toolchains("@androidndk//:all")
 
 ### Rust
 
-bazel_dep(name = "rules_rs", version = "0.0.94")
-bazel_dep(name = "llvm", version = "0.8.9")
+bazel_dep(name = "rules_rs", version = "0.0.106")
+bazel_dep(name = "llvm", version = "0.8.18")
 
 rules_rust = use_extension("@rules_rs//rs:rules_rust.bzl", "rules_rust")
 use_repo(rules_rust, "rules_rust")
